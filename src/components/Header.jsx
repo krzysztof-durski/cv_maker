@@ -1,6 +1,9 @@
+import { useRef } from 'react'
 import { Link } from 'react-router-dom'
 
-export default function Header({ onReset, onPrint }) {
+export default function Header({ onReset, onPrint, onDownload, onUpload }) {
+  const fileInputRef = useRef(null)
+
   return (
     <header className="no-print flex items-center justify-between px-4 py-2 bg-gray-900 text-white shrink-0">
       <div className="flex items-center gap-3">
@@ -17,8 +20,29 @@ export default function Header({ onReset, onPrint }) {
         </Link>
         <span className="text-gray-600 text-xs ml-2">·</span>
         <button
-          onClick={onPrint}
+          onClick={onDownload}
           className="ml-2 px-3 py-1.5 text-xs font-medium bg-gray-700 hover:bg-gray-600 text-white rounded transition-colors"
+          title="Download your CV data as a JSON backup"
+        >
+          Save Backup
+        </button>
+        <button
+          onClick={() => fileInputRef.current.click()}
+          className="px-3 py-1.5 text-xs font-medium bg-gray-700 hover:bg-gray-600 text-white rounded transition-colors"
+          title="Restore CV data from a previously saved backup"
+        >
+          Restore Backup
+        </button>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept=".json"
+          className="hidden"
+          onChange={e => { onUpload(e.target.files[0]); e.target.value = '' }}
+        />
+        <button
+          onClick={onPrint}
+          className="px-3 py-1.5 text-xs font-medium bg-gray-700 hover:bg-gray-600 text-white rounded transition-colors"
         >
           Print / Save as PDF
         </button>

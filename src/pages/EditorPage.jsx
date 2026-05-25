@@ -1,5 +1,5 @@
 import { useLocalStorage } from '../hooks/useLocalStorage'
-import { DEFAULT_DATA } from '../utils/defaultData'
+import { DEFAULT_DATA, mergeWithDefaults } from '../utils/defaultData'
 import Header from '../components/Header'
 import EditorPanel from '../components/editor/EditorPanel'
 import CVPreview from '../components/preview/CVPreview'
@@ -18,9 +18,35 @@ export default function EditorPage() {
 
   const handlePrint = () => window.print()
 
+  const handleDownload = () => {
+    const blob = new Blob([JSON.stringify(cvData, null, 2)], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = 'my-cv.json'
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+
+  const handleUpload = (file) => {
+    if (!file) return
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      try {
+        const parsed = JSON.parse(e.target.result)
+        if (window.confirm('This will replace your current CV data with the uploaded file. Continue?')) {
+          setCvData(mergeWithDefaults(parsed))
+        }
+      } catch {
+        alert('Invalid file — please upload a CV Maker .json backup file.')
+      }
+    }
+    reader.readAsText(file)
+  }
+
   return (
     <div className="flex flex-col h-screen overflow-hidden bg-gray-50">
-      <Header onReset={handleReset} onPrint={handlePrint} />
+      <Header onReset={handleReset} onPrint={handlePrint} onDownload={handleDownload} onUpload={handleUpload} />
       <div className="flex flex-1 overflow-hidden">
         <EditorPanel cvData={cvData} setCvData={setCvData} />
         <CVPreview cvData={cvData} />

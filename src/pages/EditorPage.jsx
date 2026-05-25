@@ -19,11 +19,16 @@ export default function EditorPage() {
   const handlePrint = () => window.print()
 
   const handleDownload = () => {
+    const now = new Date()
+    const dd = String(now.getDate()).padStart(2, '0')
+    const mm = String(now.getMonth() + 1).padStart(2, '0')
+    const yyyy = now.getFullYear()
+    const filename = `my-cv-backup-codepapa-${dd}-${mm}-${yyyy}.json`
     const blob = new Blob([JSON.stringify(cvData, null, 2)], { type: 'application/json' })
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = 'my-cv.json'
+    a.download = filename
     a.click()
     URL.revokeObjectURL(url)
   }

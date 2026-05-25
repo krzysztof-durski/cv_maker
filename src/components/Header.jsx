@@ -8,6 +8,17 @@ export default function Header({ onReset, onPrint, onDownload, onUpload }) {
     <header className="no-print flex items-center justify-between px-4 py-2 bg-gray-900 text-white shrink-0">
       <div className="flex items-center gap-3">
         <span className="font-semibold text-sm tracking-wide">CV Maker</span>
+        <span className="text-gray-400 text-xs">
+          by{' '}
+          <a
+            href="https://codepapa.xyz"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-gray-300 hover:text-white transition-colors"
+          >
+            Krzysztof Durski
+          </a>
+        </span>
         <span className="text-gray-500 text-xs">Harvard Style</span>
       </div>
       <div className="flex items-center gap-2">

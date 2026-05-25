@@ -57,7 +57,7 @@ export default function TermsPage() {
             <h2 className="text-base font-semibold text-gray-900 mb-2">5. Intellectual Property</h2>
             <p>
               The CV content you create is entirely yours. We claim no ownership over anything you write.
-              The CV Maker application code and design are protected by copyright.
+              The CV Maker application code and design are &copy; {new Date().getFullYear()} Krzysztof Durski, all rights reserved.
             </p>
           </section>
 

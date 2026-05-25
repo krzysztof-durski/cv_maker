@@ -1,0 +1,163 @@
+{
+  "personal": {
+    "name": "Alex Johnson",
+    "phone": "+1 555 123 4567",
+    "email": "alex.johnson@email.com",
+    "linkedin": "linkedin.com/in/alex-johnson",
+    "github": "github.com/alexjohnson",
+    "location": "San Francisco, CA"
+  },
+  "sectionOrder": [
+    { "id": "education", "enabled": true },
+    { "id": "experience", "enabled": true },
+    { "id": "projects", "enabled": true },
+    { "id": "skills", "enabled": true },
+    { "id": "languages", "enabled": true },
+    { "id": "certifications", "enabled": true },
+    { "id": "volunteer", "enabled": false },
+    { "id": "custom", "enabled": false }
+  ],
+  "education": [
+    {
+      "id": "edu-1",
+      "school": "Massachusetts Institute of Technology",
+      "degree": "Bachelor of Science",
+      "field": "Computer Science",
+      "location": "Cambridge, MA",
+      "startDate": "Sep 2020",
+      "endDate": "Jun 2024",
+      "bullets": [
+        "Relevant coursework: Algorithms, Distributed Systems, Machine Learning, Database Systems",
+        "GPA: 3.9 / 4.0 — Dean's List all semesters"
+      ]
+    }
+  ],
+  "experience": [
+    {
+      "id": "exp-1",
+      "title": "Software Engineering Intern",
+      "company": "Stripe",
+      "location": "San Francisco, CA",
+      "startDate": "Jun 2023",
+      "endDate": "Aug 2023",
+      "bullets": [
+        "Built a real-time fraud detection pipeline processing 50,000 transactions per second using Go and Kafka.",
+        "Reduced false-positive rate by 18% by improving the ML feature set used in the risk scoring model.",
+        "Shipped a developer-facing dashboard for monitoring webhook delivery latency, used by 200+ internal teams."
+      ]
+    },
+    {
+      "id": "exp-2",
+      "title": "Backend Engineering Intern",
+      "company": "Notion",
+      "location": "San Francisco, CA",
+      "startDate": "Jun 2022",
+      "endDate": "Aug 2022",
+      "bullets": [
+        "Optimised PostgreSQL query performance for the block-tree traversal algorithm, cutting p99 latency by 40%.",
+        "Designed and implemented a rate-limiting service used across all public API endpoints."
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "id": "proj-1",
+      "name": "OpenGrade",
+      "technologies": "React, Node.js, PostgreSQL, Docker",
+      "startDate": "Jan 2024",
+      "endDate": "Present",
+      "link": "github.com/alexjohnson/opengrade",
+      "description": "Open-source academic grading platform used by 3 universities",
+      "bullets": [
+        "Built a real-time collaborative grading interface with conflict resolution using CRDTs.",
+        "Containerised the full stack with Docker Compose; deployed on Fly.io with zero-downtime rolling updates.",
+        "Onboarded 12 contributors; maintains 94% test coverage with Jest and Playwright."
+      ]
+    },
+    {
+      "id": "proj-2",
+      "name": "Briefcast",
+      "technologies": "Python, FastAPI, OpenAI API, React",
+      "startDate": "Sep 2023",
+      "endDate": "Dec 2023",
+      "link": "",
+      "description": "AI-powered podcast summarisation tool",
+      "bullets": [
+        "Transcribed and summarised podcast episodes using Whisper and GPT-4, cutting listen time by 70%.",
+        "Served 800 active users within the first month of launch with no paid marketing."
+      ]
+    }
+  ],
+  "skills": [
+    {
+      "id": "skill-1",
+      "category": "Programming Languages",
+      "items": "Python, Go, TypeScript, SQL, Rust"
+    },
+    {
+      "id": "skill-2",
+      "category": "Frameworks & Libraries",
+      "items": "React, Node.js/Express, FastAPI, gRPC, Kafka"
+    },
+    {
+      "id": "skill-3",
+      "category": "Databases & Cloud",
+      "items": "PostgreSQL, Redis, DynamoDB, AWS, GCP, Docker, Kubernetes"
+    },
+    {
+      "id": "skill-4",
+      "category": "Tools",
+      "items": "Git, GitHub Actions, Terraform, Datadog, Figma"
+    }
+  ],
+  "languages": [
+    { "id": "lang-1", "language": "English", "proficiency": "Native" },
+    { "id": "lang-2", "language": "Spanish", "proficiency": "Fluent (B2)" },
+    { "id": "lang-3", "language": "Mandarin", "proficiency": "Beginner (A1)" }
+  ],
+  "certifications": [
+    {
+      "id": "cert-1",
+      "name": "AWS Certified Solutions Architect – Associate",
+      "issuer": "Amazon Web Services",
+      "date": "Mar 2023",
+      "description": ""
+    },
+    {
+      "id": "cert-2",
+      "name": "1st Place — MIT × Harvard Hackathon",
+      "issuer": "HackMIT 2022",
+      "date": "Oct 2022",
+      "description": "Built a supply-chain transparency tool using zero-knowledge proofs. Won from 400 participants."
+    }
+  ],
+  "volunteer": [
+    {
+      "id": "vol-1",
+      "role": "Lead Instructor",
+      "org": "Code for Good",
+      "location": "Boston, MA",
+      "startDate": "Sep 2021",
+      "endDate": "May 2024",
+      "bullets": [
+        "Taught weekly Python workshops to 30 high-school students from underrepresented backgrounds.",
+        "Mentored 8 students who went on to study Computer Science at university."
+      ]
+    }
+  ],
+  "custom": {
+    "title": "Publications",
+    "entries": [
+      {
+        "id": "cust-1",
+        "title": "Efficient CRDT Synchronisation in Collaborative Editors",
+        "subtitle": "MIT CSAIL Undergraduate Research Journal",
+        "startDate": "",
+        "endDate": "May 2024",
+        "bullets": [
+          "Proposed a novel delta-state CRDT variant reducing sync bandwidth by 35% compared to state-based approaches."
+        ]
+      }
+    ]
+  }
+}

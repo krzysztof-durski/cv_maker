@@ -1,4 +1,5 @@
-import { Field, DateFields, BulletList, EntryCard, SectionShell, newId } from './shared'
+import { Field, DateFields, BulletList, EntryCard, SectionShell, newId, moveItem } from './shared'
+import { SECTION_HELP } from '../../../utils/sectionHelp'
 
 export default function VolunteerEditor({ entries, onChange, onReset }) {
   const add = () => onChange([...entries, { id: newId(), role: '', org: '', location: '', startDate: '', endDate: '', bullets: [] }])
@@ -7,11 +8,14 @@ export default function VolunteerEditor({ entries, onChange, onReset }) {
   const addBullet = (id) => onChange(entries.map(e => e.id === id ? { ...e, bullets: [...e.bullets, ''] } : e))
   const updateBullet = (id, i, v) => onChange(entries.map(e => e.id === id ? { ...e, bullets: e.bullets.map((b, j) => j === i ? v : b) } : e))
   const removeBullet = (id, i) => onChange(entries.map(e => e.id === id ? { ...e, bullets: e.bullets.filter((_, j) => j !== i) } : e))
+  const move = (id, dir) => onChange(moveItem(entries, entries.findIndex(e => e.id === id), dir))
 
   return (
-    <SectionShell title="Volunteer & Extracurriculars" onAdd={add} addLabel="+ Add entry" onReset={onReset}>
-      {entries.map(e => (
-        <EntryCard key={e.id} onRemove={() => remove(e.id)} canRemove={entries.length > 1}>
+    <SectionShell title="Volunteer & Extracurriculars" onAdd={add} addLabel="+ Add entry" onReset={onReset} help={SECTION_HELP.volunteer}>
+      {entries.map((e, i) => (
+        <EntryCard key={e.id} onRemove={() => remove(e.id)} canRemove={entries.length > 1}
+          onMoveUp={() => move(e.id, -1)} onMoveDown={() => move(e.id, 1)}
+          isFirst={i === 0} isLast={i === entries.length - 1}>
           <Field label="Role / Position" value={e.role} onChange={v => update(e.id, 'role', v)} placeholder="Club President" className="col-span-2" />
           <Field label="Organization" value={e.org} onChange={v => update(e.id, 'org', v)} placeholder="Coding Club" />
           <Field label="Location" value={e.location} onChange={v => update(e.id, 'location', v)} placeholder="City, Country" />

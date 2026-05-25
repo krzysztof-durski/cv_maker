@@ -1,4 +1,5 @@
 import { useLocalStorage } from '../hooks/useLocalStorage'
+import { useDarkMode } from '../hooks/useDarkMode'
 import { DEFAULT_DATA, mergeWithDefaults } from '../utils/defaultData'
 import Header from '../components/Header'
 import EditorPanel from '../components/editor/EditorPanel'
@@ -6,6 +7,7 @@ import CVPreview from '../components/preview/CVPreview'
 
 export default function EditorPage() {
   const [cvData, setCvData] = useLocalStorage('cv_maker_data', DEFAULT_DATA)
+  const [isDark, toggleDark] = useDarkMode()
 
   const handleReset = () => {
     if (window.confirm(
@@ -51,7 +53,7 @@ export default function EditorPage() {
 
   return (
     <div className="flex flex-col h-screen overflow-hidden bg-gray-50">
-      <Header onReset={handleReset} onPrint={handlePrint} onDownload={handleDownload} onUpload={handleUpload} />
+      <Header onReset={handleReset} onPrint={handlePrint} onDownload={handleDownload} onUpload={handleUpload} isDark={isDark} onToggleDark={toggleDark} />
       <div className="flex flex-1 overflow-hidden">
         <EditorPanel cvData={cvData} setCvData={setCvData} />
         <CVPreview cvData={cvData} />

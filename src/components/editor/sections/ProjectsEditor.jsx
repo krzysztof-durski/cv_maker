@@ -1,4 +1,5 @@
-import { Field, DateFields, BulletList, EntryCard, SectionShell, newId } from './shared'
+import { Field, DateFields, BulletList, EntryCard, SectionShell, newId, moveItem } from './shared'
+import { SECTION_HELP } from '../../../utils/sectionHelp'
 
 export default function ProjectsEditor({ entries, onChange, onReset }) {
   const add = () => onChange([...entries, { id: newId(), name: '', technologies: '', startDate: '', endDate: '', link: '', description: '', bullets: [] }])
@@ -7,11 +8,14 @@ export default function ProjectsEditor({ entries, onChange, onReset }) {
   const addBullet = (id) => onChange(entries.map(e => e.id === id ? { ...e, bullets: [...e.bullets, ''] } : e))
   const updateBullet = (id, i, v) => onChange(entries.map(e => e.id === id ? { ...e, bullets: e.bullets.map((b, j) => j === i ? v : b) } : e))
   const removeBullet = (id, i) => onChange(entries.map(e => e.id === id ? { ...e, bullets: e.bullets.filter((_, j) => j !== i) } : e))
+  const move = (id, dir) => onChange(moveItem(entries, entries.findIndex(e => e.id === id), dir))
 
   return (
-    <SectionShell title="Projects" onAdd={add} addLabel="+ Add project" onReset={onReset}>
-      {entries.map(e => (
-        <EntryCard key={e.id} onRemove={() => remove(e.id)} canRemove={entries.length > 1}>
+    <SectionShell title="Projects" onAdd={add} addLabel="+ Add project" onReset={onReset} help={SECTION_HELP.projects}>
+      {entries.map((e, i) => (
+        <EntryCard key={e.id} onRemove={() => remove(e.id)} canRemove={entries.length > 1}
+          onMoveUp={() => move(e.id, -1)} onMoveDown={() => move(e.id, 1)}
+          isFirst={i === 0} isLast={i === entries.length - 1}>
           <Field label="Project Name" value={e.name} onChange={v => update(e.id, 'name', v)} placeholder="My Project" />
           <Field label="Technologies" value={e.technologies} onChange={v => update(e.id, 'technologies', v)} placeholder="React, Node.js, Supabase" />
           <Field label="Subtitle / Description" value={e.description} onChange={v => update(e.id, 'description', v)} placeholder="A short description of the project" className="col-span-2" />

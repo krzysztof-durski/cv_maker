@@ -1,7 +1,7 @@
 import { useRef } from 'react'
 import { Link } from 'react-router-dom'
 
-export default function Header({ onReset, onPrint, onDownload, onUpload }) {
+export default function Header({ onReset, onPrint, onDownload, onUpload, isDark, onToggleDark }) {
   const fileInputRef = useRef(null)
 
   return (
@@ -23,6 +23,14 @@ export default function Header({ onReset, onPrint, onDownload, onUpload }) {
         </span>
       </div>
       <div className="flex items-center gap-2">
+        <Link to="/help" className="text-xs text-gray-400 hover:text-gray-200 transition-colors">
+          Help
+        </Link>
+        <span className="text-gray-600 text-xs">·</span>
+        <Link to="/about" className="text-xs text-gray-400 hover:text-gray-200 transition-colors">
+          About
+        </Link>
+        <span className="text-gray-600 text-xs">·</span>
         <Link to="/terms" className="text-xs text-gray-400 hover:text-gray-200 transition-colors">
           Terms
         </Link>
@@ -57,6 +65,13 @@ export default function Header({ onReset, onPrint, onDownload, onUpload }) {
           className="px-3 py-1.5 text-xs font-medium bg-gray-700 hover:bg-gray-600 text-white rounded transition-colors"
         >
           Print / Save as PDF
+        </button>
+        <button
+          onClick={onToggleDark}
+          className="px-3 py-1.5 text-xs font-medium bg-gray-700 hover:bg-gray-600 text-white rounded transition-colors"
+          title="Toggle dark mode"
+        >
+          {isDark ? '☀ Light' : '☾ Dark'}
         </button>
         <button
           onClick={onReset}

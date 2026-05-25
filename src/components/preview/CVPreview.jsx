@@ -44,7 +44,7 @@ export default function CVPreview({ cvData }) {
   const scaledW = Math.round(A4_W * scale)
 
   return (
-    <div ref={outerRef} className="flex-1 overflow-auto bg-gray-400" style={{ padding: '24px' }} id="cv-preview-outer">
+    <div ref={outerRef} className="flex-1 overflow-auto bg-gray-400 dark:bg-gray-700" style={{ padding: '24px' }} id="cv-preview-outer">
       <div style={{ width: scaledW, margin: '0 auto', transformOrigin: 'top left' }}>
         <div
           id="cv-page"

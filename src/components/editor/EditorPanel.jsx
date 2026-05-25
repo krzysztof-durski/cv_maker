@@ -26,7 +26,7 @@ export default function EditorPanel({ cvData, setCvData }) {
   }
 
   return (
-    <div className="no-print w-1/2 overflow-y-auto p-4 border-r border-gray-200 bg-gray-50">
+    <div className="no-print w-1/2 overflow-y-auto p-4 border-r border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
       <PersonalInfoEditor
         personal={cvData.personal}
         onChange={update('personal')}

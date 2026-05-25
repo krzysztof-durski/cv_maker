@@ -1,0 +1,68 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@media print {
+  /* Hide editor, header, page break bands */
+  .no-print { display: none !important; }
+
+  /* Flatten all flex/overflow wrappers so cv-page flows freely across pages */
+  body,
+  #root,
+  #root > div,
+  #root > div > div {
+    display: block !important;
+    height: auto !important;
+    overflow: visible !important;
+    background: transparent !important;
+  }
+
+  #cv-preview-outer {
+    padding: 0 !important;
+    background: transparent !important;
+    overflow: visible !important;
+    height: auto !important;
+  }
+
+  /* The scaled wrapper div — reset to static flow */
+  #cv-preview-outer > div {
+    position: static !important;
+    width: 100% !important;
+    height: auto !important;
+  }
+
+  #cv-page {
+    position: static !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    transform: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    background: white !important;
+  }
+
+  @page {
+    size: A4;
+    margin: 0.75in;
+    /* Clear all browser-native header/footer content */
+    @top-left     { content: none; }
+    @top-center   { content: none; }
+    @top-right    { content: none; }
+    @bottom-left  { content: none; }
+    @bottom-right { content: none; }
+    /* Show page number only */
+    @bottom-center {
+      content: counter(page) ' / ' counter(pages);
+      font-family: 'Times New Roman', serif;
+      font-size: 9pt;
+      color: #888;
+    }
+  }
+
+  /* Hide page number when document is exactly one page */
+  @page :only {
+    @bottom-center { content: none; }
+  }
+}

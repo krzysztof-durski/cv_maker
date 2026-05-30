@@ -9,14 +9,20 @@ export const SECTION_LABELS = {
   custom: 'Custom Section',
 }
 
+export const LINK_TYPES = {
+  linkedin:  'LinkedIn',
+  github:    'GitHub',
+  portfolio: 'Portfolio',
+  other:     'Other',
+}
+
 export const DEFAULT_DATA = {
   personal: {
     name: '',
     phone: '',
     email: '',
-    linkedin: '',
-    github: '',
     location: '',
+    links: [],
   },
   sectionOrder: [
     { id: 'education', enabled: true },
@@ -57,11 +63,28 @@ export const DEFAULT_DATA = {
   },
 }
 
+function migratePersonal(p = {}) {
+  if (Array.isArray(p.links)) {
+    return { ...DEFAULT_DATA.personal, ...p }
+  }
+  // migrate old linkedin/github string fields → links array
+  const links = []
+  if (p.linkedin) links.push({ id: 'link-li', type: 'linkedin', url: p.linkedin })
+  if (p.github)   links.push({ id: 'link-gh', type: 'github',   url: p.github })
+  return {
+    name:     p.name     || '',
+    phone:    p.phone    || '',
+    email:    p.email    || '',
+    location: p.location || '',
+    links,
+  }
+}
+
 export function mergeWithDefaults(stored) {
   return {
     ...DEFAULT_DATA,
     ...stored,
-    personal: { ...DEFAULT_DATA.personal, ...(stored.personal || {}) },
+    personal: migratePersonal(stored.personal),
     sectionOrder: stored.sectionOrder || DEFAULT_DATA.sectionOrder,
     custom: {
       ...DEFAULT_DATA.custom,

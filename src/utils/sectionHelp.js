@@ -4,7 +4,8 @@ export const SECTION_HELP = {
     tips: [
       'Use your full legal name as it appears on official documents.',
       'Include your country code in the phone number (e.g. +48 123 456 789).',
-      'LinkedIn and GitHub: just the path — e.g. linkedin.com/in/yourname. No need for https://.',
+      'Add links using the quick-add buttons — LinkedIn, GitHub, Portfolio, etc.',
+      'You can paste full URLs (https://...) or just the path — both work.',
       'Location is city and country only — never your full street address.',
       'Only include links that are up to date and professional.',
     ],

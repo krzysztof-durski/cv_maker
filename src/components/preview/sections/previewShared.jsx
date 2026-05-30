@@ -1,6 +1,6 @@
 export function SectionHeader({ title }) {
   return (
-    <div style={{ marginTop: '14px', marginBottom: '4px' }}>
+    <div style={{ marginTop: '10px', marginBottom: '3px' }}>
       <div style={{ fontWeight: 'bold', textTransform: 'uppercase', fontSize: '11pt', letterSpacing: '0.05em' }}>
         {title}
       </div>
@@ -11,7 +11,7 @@ export function SectionHeader({ title }) {
 
 export function EntryHeader({ left, right }) {
   return (
-    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginTop: '6px', gap: '8px' }}>
+    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginTop: '4px', gap: '8px' }}>
       <strong style={{ fontSize: '11pt', minWidth: 0, overflowWrap: 'break-word' }}>{left}</strong>
       <span style={{ fontSize: '10pt', whiteSpace: 'nowrap', flexShrink: 0 }}>{right}</span>
     </div>
@@ -28,7 +28,7 @@ export function Bullets({ bullets }) {
   return (
     <div style={{ marginTop: '2px' }}>
       {filled.map((b, i) => (
-        <div key={i} style={{ display: 'flex', alignItems: 'flex-start', fontSize: '11pt', lineHeight: '1.4' }}>
+        <div key={i} style={{ display: 'flex', alignItems: 'flex-start', fontSize: '10pt', lineHeight: '1.3' }}>
           <span style={{ minWidth: '14px', paddingLeft: '6px', flexShrink: 0 }}>•</span>
           <span>{b}</span>
         </div>

@@ -2,3 +2,8 @@ node_modules/
 dist/
 .DS_Store
 *.local
+
+# CV data files
+my-cv.json
+*-cv.json
+my-cv-backup-*.json

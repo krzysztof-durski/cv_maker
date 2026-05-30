@@ -8,7 +8,7 @@ export default function PreviewSkills({ entries }) {
     <div>
       <SectionHeader title="Technical Skills" />
       {visible.map(e => (
-        <div key={e.id} style={{ fontSize: '11pt', lineHeight: '1.5', marginTop: '3px' }}>
+        <div key={e.id} style={{ fontSize: '11pt', lineHeight: '1.2', marginTop: '1px' }}>
           {e.category && <strong>{e.category}: </strong>}
           {e.items}
         </div>

@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useLocalStorage } from '../hooks/useLocalStorage'
 import { useDarkMode } from '../hooks/useDarkMode'
 import { DEFAULT_DATA, mergeWithDefaults } from '../utils/defaultData'
@@ -8,6 +9,7 @@ import CVPreview from '../components/preview/CVPreview'
 export default function EditorPage() {
   const [cvData, setCvData] = useLocalStorage('cv_maker_data', DEFAULT_DATA)
   const [isDark, toggleDark] = useDarkMode()
+  const [mobileView, setMobileView] = useState('edit') // 'edit' | 'preview' — only used below lg
 
   const handleReset = () => {
     if (window.confirm(
@@ -52,12 +54,34 @@ export default function EditorPage() {
   }
 
   return (
-    <div className="flex flex-col h-screen overflow-hidden bg-gray-50">
-      <Header onReset={handleReset} onPrint={handlePrint} onDownload={handleDownload} onUpload={handleUpload} isDark={isDark} onToggleDark={toggleDark} />
-      <div className="flex flex-1 overflow-hidden">
-        <EditorPanel cvData={cvData} setCvData={setCvData} />
-        <CVPreview cvData={cvData} />
-      </div>
+    <div id="app-shell" className="flex h-dvh flex-col overflow-hidden bg-gray-100 dark:bg-gray-950">
+      <Header
+        onReset={handleReset}
+        onPrint={handlePrint}
+        onDownload={handleDownload}
+        onUpload={handleUpload}
+        isDark={isDark}
+        onToggleDark={toggleDark}
+        mobileView={mobileView}
+        onMobileViewChange={setMobileView}
+      />
+
+      <main id="app-main" className="flex flex-1 overflow-hidden">
+        {/* Editor */}
+        <div
+          className={`${mobileView === 'edit' ? 'flex' : 'hidden'} thin-scroll no-print w-full shrink-0 flex-col overflow-y-auto border-r border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-900 lg:flex lg:w-[440px] xl:w-[480px]`}
+        >
+          <EditorPanel cvData={cvData} setCvData={setCvData} />
+        </div>
+
+        {/* Live preview */}
+        <div
+          id="cv-preview-pane"
+          className={`${mobileView === 'preview' ? 'flex' : 'hidden'} relative min-w-0 flex-1 lg:flex`}
+        >
+          <CVPreview cvData={cvData} />
+        </div>
+      </main>
     </div>
   )
 }

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Field, DateFields, BulletList, EntryCard, newId, moveItem } from './shared'
+import { Field, DateFields, BulletList, EntryCard, newId, moveItem, inputClass, labelClass } from './shared'
 import { SECTION_HELP } from '../../../utils/sectionHelp'
 
 export default function CustomSectionEditor({ custom, onChange, onReset }) {
@@ -45,17 +45,17 @@ export default function CustomSectionEditor({ custom, onChange, onReset }) {
   })
 
   return (
-    <div className="mb-4 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 overflow-hidden">
-      <div className="px-3 py-2 bg-gray-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600 flex items-center justify-between">
+    <div className="mb-4 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800">
+      <div className="flex items-center justify-between border-b border-gray-200 bg-gray-50 px-3 py-2.5 dark:border-gray-700 dark:bg-gray-750">
         <div className="flex items-center gap-2">
-          <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Custom Section</p>
+          <p className="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Custom Section</p>
           <button
             onClick={() => setShowHelp(v => !v)}
             title="Show tips for this section"
-            className={`w-4 h-4 rounded-full text-[10px] font-bold flex items-center justify-center transition-colors
+            className={`flex h-4 w-4 items-center justify-center rounded-full text-[10px] font-bold transition-colors
               ${showHelp
                 ? 'bg-blue-500 text-white'
-                : 'bg-gray-200 dark:bg-gray-600 text-gray-500 dark:text-gray-300 hover:bg-blue-400 hover:text-white'}`}
+                : 'bg-gray-200 text-gray-500 hover:bg-blue-400 hover:text-white dark:bg-gray-600 dark:text-gray-300'}`}
           >
             ?
           </button>
@@ -63,7 +63,7 @@ export default function CustomSectionEditor({ custom, onChange, onReset }) {
         {onReset && (
           <button
             onClick={handleReset}
-            className="text-xs text-gray-400 dark:text-gray-500 hover:text-red-400 transition-colors ml-2"
+            className="ml-2 text-xs text-gray-400 transition-colors hover:text-red-500 dark:text-gray-500"
             title="Reset Custom Section"
           >
             ↺ Reset
@@ -71,8 +71,8 @@ export default function CustomSectionEditor({ custom, onChange, onReset }) {
         )}
       </div>
       {showHelp && (
-        <div className="mx-3 mt-3 rounded-md bg-blue-50 dark:bg-blue-950 border border-blue-100 dark:border-blue-900 p-3">
-          <p className="text-xs text-blue-800 dark:text-blue-200 font-medium mb-1.5">{help.intro}</p>
+        <div className="mx-3 mt-3 rounded-lg border border-blue-100 bg-blue-50 p-3 dark:border-blue-900 dark:bg-blue-950">
+          <p className="mb-1.5 text-xs font-medium text-blue-800 dark:text-blue-200">{help.intro}</p>
           <ul className="space-y-1">
             {help.tips.map((tip, i) => (
               <li key={i} className="flex items-start gap-1.5 text-xs text-blue-700 dark:text-blue-300">
@@ -85,13 +85,13 @@ export default function CustomSectionEditor({ custom, onChange, onReset }) {
       )}
       <div className="p-3">
         <div className="mb-3">
-          <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-0.5">Section Title</label>
+          <label className={labelClass}>Section Title</label>
           <input
             type="text"
             value={custom.title}
             onChange={e => updateTitle(e.target.value)}
             placeholder="e.g. Publications, Research, Awards..."
-            className="w-full px-2 py-1.5 text-sm border border-gray-200 dark:border-gray-600 rounded focus:outline-none focus:border-gray-400 dark:focus:border-gray-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 font-semibold"
+            className={`${inputClass} font-semibold`}
           />
         </div>
         {custom.entries.map((e, i) => (
@@ -115,7 +115,7 @@ export default function CustomSectionEditor({ custom, onChange, onReset }) {
         ))}
         <button
           onClick={addEntry}
-          className="text-xs font-medium text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 border border-dashed border-gray-300 dark:border-gray-600 rounded px-3 py-1.5 w-full hover:border-gray-400 dark:hover:border-gray-500 transition-colors"
+          className="w-full rounded-lg border border-dashed border-gray-300 px-3 py-2 text-xs font-medium text-gray-500 transition-colors hover:border-indigo-400 hover:text-indigo-600 dark:border-gray-600 dark:text-gray-400 dark:hover:border-indigo-500 dark:hover:text-indigo-400"
         >
           + Add entry
         </button>

@@ -1,3 +1,4 @@
+import HowToUse from './HowToUse'
 import SectionManager from './SectionManager'
 import PersonalInfoEditor from './sections/PersonalInfoEditor'
 import EducationEditor from './sections/EducationEditor'
@@ -26,7 +27,15 @@ export default function EditorPanel({ cvData, setCvData }) {
   }
 
   return (
-    <div className="no-print w-1/2 overflow-y-auto p-4 border-r border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
+    <div className="mx-auto w-full max-w-2xl p-4 sm:p-5">
+      <div className="mb-4 flex items-baseline justify-between">
+        <h1 className="text-sm font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+          Editor
+        </h1>
+        <span className="text-xs text-gray-400 dark:text-gray-500">Auto-saved locally</span>
+      </div>
+
+      <HowToUse />
       <PersonalInfoEditor
         personal={cvData.personal}
         onChange={update('personal')}

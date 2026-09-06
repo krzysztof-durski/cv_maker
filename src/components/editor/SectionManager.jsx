@@ -31,22 +31,24 @@ function SortableRow({ section, onToggle }) {
     <div
       ref={setNodeRef}
       style={style}
-      className="flex items-center gap-2 py-1.5 px-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 group"
+      className="group flex items-center gap-2 rounded-lg px-2 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"
     >
       <span
         {...attributes}
         {...listeners}
-        className="cursor-grab text-gray-300 dark:text-gray-600 group-hover:text-gray-400 dark:group-hover:text-gray-400 select-none text-lg leading-none"
+        className="cursor-grab select-none text-lg leading-none text-gray-300 group-hover:text-gray-500 dark:text-gray-600 dark:group-hover:text-gray-400"
         title="Drag to reorder"
       >
         ⠿
       </span>
-      <span className="flex-1 text-sm text-gray-700 dark:text-gray-200">{SECTION_LABELS[section.id]}</span>
+      <span className={`flex-1 text-sm ${section.enabled ? 'text-gray-700 dark:text-gray-200' : 'text-gray-400 dark:text-gray-500'}`}>
+        {SECTION_LABELS[section.id]}
+      </span>
       <input
         type="checkbox"
         checked={section.enabled}
         onChange={() => onToggle(section.id)}
-        className="h-4 w-4 accent-gray-700 cursor-pointer"
+        className="h-4 w-4 cursor-pointer accent-indigo-600"
       />
     </div>
   )
@@ -71,10 +73,10 @@ export default function SectionManager({ sectionOrder, onChange }) {
   }
 
   return (
-    <div className="mb-4 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 overflow-hidden">
-      <div className="px-3 py-2 bg-gray-50 dark:bg-gray-750 border-b border-gray-200 dark:border-gray-700">
-        <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Sections</p>
-        <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">Toggle on/off · Drag to reorder</p>
+    <div className="mb-4 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800">
+      <div className="border-b border-gray-200 bg-gray-50 px-3 py-2.5 dark:border-gray-700 dark:bg-gray-750">
+        <p className="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Sections</p>
+        <p className="mt-0.5 text-xs text-gray-400 dark:text-gray-500">Toggle on/off · Drag to reorder</p>
       </div>
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
         <SortableContext items={sectionOrder.map(s => s.id)} strategy={verticalListSortingStrategy}>

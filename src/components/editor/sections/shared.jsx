@@ -8,10 +8,16 @@ export function moveItem(arr, index, direction) {
   return result
 }
 
+/* Shared input styling — imported by the other section editors too */
+export const inputClass =
+  'w-full rounded-lg border border-gray-200 bg-white px-2.5 py-2 text-sm text-gray-900 placeholder-gray-400 transition-colors focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-indigo-400'
+
+export const labelClass = 'block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1'
+
 function HelpPanel({ help }) {
   return (
-    <div className="mx-3 mb-3 rounded-md bg-blue-50 dark:bg-blue-950 border border-blue-100 dark:border-blue-900 p-3">
-      <p className="text-xs text-blue-800 dark:text-blue-200 font-medium mb-1.5">{help.intro}</p>
+    <div className="mx-3 mb-3 rounded-lg border border-blue-100 bg-blue-50 p-3 dark:border-blue-900 dark:bg-blue-950">
+      <p className="mb-1.5 text-xs font-medium text-blue-800 dark:text-blue-200">{help.intro}</p>
       <ul className="space-y-1">
         {help.tips.map((tip, i) => (
           <li key={i} className="flex items-start gap-1.5 text-xs text-blue-700 dark:text-blue-300">
@@ -27,13 +33,13 @@ function HelpPanel({ help }) {
 export function Field({ label, value, onChange, placeholder, type = 'text', className = '' }) {
   return (
     <div className={className}>
-      <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-0.5">{label}</label>
+      <label className={labelClass}>{label}</label>
       <input
         type={type}
         value={value}
         onChange={e => onChange(e.target.value)}
         placeholder={placeholder}
-        className="w-full px-2 py-1.5 text-sm border border-gray-200 dark:border-gray-600 rounded focus:outline-none focus:border-gray-400 dark:focus:border-gray-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
+        className={inputClass}
       />
     </div>
   )
@@ -42,7 +48,7 @@ export function Field({ label, value, onChange, placeholder, type = 'text', clas
 export function DateFields({ startDate, endDate, onStartChange, onEndChange }) {
   const isPresent = endDate === 'Present'
   return (
-    <div className="col-span-2 grid grid-cols-2 gap-2 items-end">
+    <div className="col-span-2 grid grid-cols-2 items-start gap-2">
       <Field
         label="Start Date"
         value={startDate}
@@ -50,21 +56,21 @@ export function DateFields({ startDate, endDate, onStartChange, onEndChange }) {
         placeholder="Sep 2022"
       />
       <div>
-        <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-0.5">End Date</label>
+        <label className={labelClass}>End Date</label>
         <input
           type="text"
           value={isPresent ? '' : endDate}
           onChange={e => onEndChange(e.target.value)}
           disabled={isPresent}
           placeholder="Jun 2026"
-          className="w-full px-2 py-1.5 text-sm border border-gray-200 dark:border-gray-600 rounded focus:outline-none focus:border-gray-400 dark:focus:border-gray-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 disabled:bg-gray-100 dark:disabled:bg-gray-600 disabled:text-gray-400 dark:disabled:text-gray-500"
+          className={`${inputClass} disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400 dark:disabled:bg-gray-600 dark:disabled:text-gray-500`}
         />
-        <label className="flex items-center gap-1.5 mt-1 cursor-pointer">
+        <label className="mt-1.5 flex cursor-pointer items-center gap-1.5">
           <input
             type="checkbox"
             checked={isPresent}
             onChange={e => onEndChange(e.target.checked ? 'Present' : '')}
-            className="h-3.5 w-3.5 accent-gray-700 cursor-pointer"
+            className="h-3.5 w-3.5 cursor-pointer accent-indigo-600"
           />
           <span className="text-xs text-gray-500 dark:text-gray-400">Currently ongoing</span>
         </label>
@@ -76,20 +82,20 @@ export function DateFields({ startDate, endDate, onStartChange, onEndChange }) {
 export function BulletList({ bullets, onAdd, onUpdate, onRemove }) {
   return (
     <div className="col-span-2">
-      <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Bullet Points</label>
+      <label className={labelClass}>Bullet Points</label>
       {bullets.map((b, i) => (
-        <div key={i} className="flex items-start gap-1 mb-1">
-          <span className="text-gray-400 dark:text-gray-500 text-sm mt-1.5 shrink-0">•</span>
+        <div key={i} className="mb-1.5 flex items-start gap-1.5">
+          <span className="mt-2 shrink-0 text-sm text-gray-400 dark:text-gray-500">•</span>
           <textarea
             value={b}
             onChange={e => onUpdate(i, e.target.value)}
             placeholder="Describe your achievement or responsibility..."
             rows={2}
-            className="flex-1 px-2 py-1.5 text-sm border border-gray-200 dark:border-gray-600 rounded focus:outline-none focus:border-gray-400 dark:focus:border-gray-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 resize-none"
+            className={`${inputClass} resize-none`}
           />
           <button
             onClick={() => onRemove(i)}
-            className="shrink-0 text-gray-300 dark:text-gray-600 hover:text-red-400 text-lg leading-none mt-1"
+            className="mt-1 shrink-0 text-lg leading-none text-gray-300 transition-colors hover:text-red-500 dark:text-gray-600"
             title="Remove bullet"
           >
             ×
@@ -98,7 +104,7 @@ export function BulletList({ bullets, onAdd, onUpdate, onRemove }) {
       ))}
       <button
         onClick={onAdd}
-        className="text-xs text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 mt-1"
+        className="mt-1 text-xs font-medium text-indigo-600 transition-colors hover:text-indigo-700 dark:text-indigo-400"
       >
         + Add bullet
       </button>
@@ -108,12 +114,12 @@ export function BulletList({ bullets, onAdd, onUpdate, onRemove }) {
 
 export function EntryCard({ children, onRemove, canRemove, onMoveUp, onMoveDown, isFirst, isLast }) {
   return (
-    <div className="border border-gray-200 dark:border-gray-700 rounded p-3 mb-3 bg-gray-50 dark:bg-gray-900 relative">
-      <div className="absolute top-2 right-2 flex items-center gap-1">
+    <div className="relative mb-3 rounded-lg border border-gray-200 bg-gray-50 p-3 dark:border-gray-700 dark:bg-gray-900">
+      <div className="absolute right-2 top-2 flex items-center gap-1">
         <button
           onClick={onMoveUp}
           disabled={isFirst}
-          className="text-gray-300 dark:text-gray-600 hover:text-gray-500 dark:hover:text-gray-400 disabled:opacity-20 disabled:cursor-default text-xs leading-none px-0.5"
+          className="px-0.5 text-xs leading-none text-gray-300 transition-colors hover:text-gray-500 disabled:cursor-default disabled:opacity-20 dark:text-gray-600 dark:hover:text-gray-400"
           title="Move up"
         >
           ▲
@@ -121,7 +127,7 @@ export function EntryCard({ children, onRemove, canRemove, onMoveUp, onMoveDown,
         <button
           onClick={onMoveDown}
           disabled={isLast}
-          className="text-gray-300 dark:text-gray-600 hover:text-gray-500 dark:hover:text-gray-400 disabled:opacity-20 disabled:cursor-default text-xs leading-none px-0.5"
+          className="px-0.5 text-xs leading-none text-gray-300 transition-colors hover:text-gray-500 disabled:cursor-default disabled:opacity-20 dark:text-gray-600 dark:hover:text-gray-400"
           title="Move down"
         >
           ▼
@@ -129,7 +135,7 @@ export function EntryCard({ children, onRemove, canRemove, onMoveUp, onMoveDown,
         {canRemove && (
           <button
             onClick={onRemove}
-            className="text-gray-300 dark:text-gray-600 hover:text-red-400 text-xl leading-none ml-0.5"
+            className="ml-0.5 text-xl leading-none text-gray-300 transition-colors hover:text-red-500 dark:text-gray-600"
             title="Remove entry"
           >
             ×
@@ -153,18 +159,18 @@ export function SectionShell({ title, children, onAdd, addLabel = '+ Add entry',
   }
 
   return (
-    <div className="mb-4 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 overflow-hidden">
-      <div className="px-3 py-2 bg-gray-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600 flex items-center justify-between">
+    <div className="mb-4 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800">
+      <div className="flex items-center justify-between border-b border-gray-200 bg-gray-50 px-3 py-2.5 dark:border-gray-700 dark:bg-gray-750">
         <div className="flex items-center gap-2">
-          <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">{title}</p>
+          <p className="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">{title}</p>
           {help && (
             <button
               onClick={() => setShowHelp(v => !v)}
               title="Show tips for this section"
-              className={`w-4 h-4 rounded-full text-[10px] font-bold flex items-center justify-center transition-colors
+              className={`flex h-4 w-4 items-center justify-center rounded-full text-[10px] font-bold transition-colors
                 ${showHelp
                   ? 'bg-blue-500 text-white'
-                  : 'bg-gray-200 dark:bg-gray-600 text-gray-500 dark:text-gray-300 hover:bg-blue-400 hover:text-white'}`}
+                  : 'bg-gray-200 text-gray-500 hover:bg-blue-400 hover:text-white dark:bg-gray-600 dark:text-gray-300'}`}
             >
               ?
             </button>
@@ -173,7 +179,7 @@ export function SectionShell({ title, children, onAdd, addLabel = '+ Add entry',
         {onReset && (
           <button
             onClick={handleReset}
-            className="text-xs text-gray-400 dark:text-gray-500 hover:text-red-400 transition-colors ml-2"
+            className="ml-2 text-xs text-gray-400 transition-colors hover:text-red-500 dark:text-gray-500"
             title={`Reset ${title}`}
           >
             ↺ Reset
@@ -185,7 +191,7 @@ export function SectionShell({ title, children, onAdd, addLabel = '+ Add entry',
         {children}
         <button
           onClick={onAdd}
-          className="text-xs font-medium text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 border border-dashed border-gray-300 dark:border-gray-600 rounded px-3 py-1.5 w-full hover:border-gray-400 dark:hover:border-gray-500 transition-colors"
+          className="w-full rounded-lg border border-dashed border-gray-300 px-3 py-2 text-xs font-medium text-gray-500 transition-colors hover:border-indigo-400 hover:text-indigo-600 dark:border-gray-600 dark:text-gray-400 dark:hover:border-indigo-500 dark:hover:text-indigo-400"
         >
           {addLabel}
         </button>

@@ -1,11 +1,11 @@
-import { SectionHeader } from './previewShared'
+import { SectionHeader, KeepTogether } from './previewShared'
 
 export default function PreviewLanguages({ entries }) {
   const visible = entries.filter(e => e.language)
   if (!visible.length) return null
 
   return (
-    <div>
+    <KeepTogether>
       <SectionHeader title="Languages" />
       <div style={{ marginTop: '3px' }}>
         {visible.map((e, i) => (
@@ -15,6 +15,6 @@ export default function PreviewLanguages({ entries }) {
           </span>
         ))}
       </div>
-    </div>
+    </KeepTogether>
   )
 }

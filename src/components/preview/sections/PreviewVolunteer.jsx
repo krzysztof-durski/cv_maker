@@ -1,4 +1,4 @@
-import { SectionHeader, EntryHeader, Italic, Bullets, dateRange } from './previewShared'
+import { SectionHeader, EntryHeader, Italic, EntryBlock, dateRange } from './previewShared'
 
 export default function PreviewVolunteer({ entries }) {
   const visible = entries.filter(e => e.role || e.org)
@@ -6,16 +6,21 @@ export default function PreviewVolunteer({ entries }) {
 
   return (
     <div>
-      <SectionHeader title="Volunteer & Extracurriculars" />
-      {visible.map(e => (
-        <div key={e.id}>
-          <EntryHeader
-            left={e.org}
-            right={[e.location, dateRange(e.startDate, e.endDate)].filter(Boolean).join(' · ')}
-          />
-          {e.role && <Italic>{e.role}</Italic>}
-          <Bullets bullets={e.bullets} />
-        </div>
+      {visible.map((e, i) => (
+        <EntryBlock
+          key={e.id}
+          heading={i === 0 ? <SectionHeader title="Volunteer & Extracurriculars" /> : null}
+          lead={(
+            <>
+              <EntryHeader
+                left={e.org}
+                right={[e.location, dateRange(e.startDate, e.endDate)].filter(Boolean).join(' · ')}
+              />
+              {e.role && <Italic>{e.role}</Italic>}
+            </>
+          )}
+          bullets={e.bullets}
+        />
       ))}
     </div>
   )

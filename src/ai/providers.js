@@ -97,6 +97,46 @@ async function call(label, url, options) {
   }
 }
 
+/* ---------- which models are worth offering ---------- */
+// Providers list everything they sell: image, audio, video, embedding and research models, dated
+// snapshots, aliases. Only current text chat models can edit a CV, so each provider's list is
+// reduced to those with an allow-list (not a block-list, which new product names slip past).
+// A model that is not offered can still be typed in under "Other…" in the settings.
+
+// gpt-5, gpt-4.1, gpt-4o, gpt-5-mini, gpt-5-nano, gpt-5-pro, o3, o4-mini: no dated snapshots, audio, image or search variants.
+const OPENAI_CHAT = /^(gpt-\d+(\.\d+)*o?(-mini|-nano|-pro)?|o\d+(-mini|-pro)?)$/
+
+export function relevantOpenAiModels(models) {
+  return models
+    .filter(m => OPENAI_CHAT.test(m.id))
+    .sort((a, b) => (b.created || 0) - (a.created || 0))
+    .map(m => ({ id: m.id, label: m.id }))
+}
+
+// claude-sonnet-5-5 rather than claude-sonnet-4-5-20250929 when the undated alias exists.
+export function relevantAnthropicModels(models) {
+  const ids = new Set(models.map(m => m.id))
+  return models
+    .filter(m => /^claude-/.test(m.id))
+    .filter(m => !(/-\d{8}$/.test(m.id) && ids.has(m.id.replace(/-\d{8}$/, ''))))
+    .map(m => ({ id: m.id, label: m.display_name ? `${m.display_name} (${m.id})` : m.id }))
+}
+
+// gemini-3.5-flash, gemini-3.1-pro-preview, gemini-2.5-flash-lite: no tts, image, live, transcribe,
+// computer-use, robotics, custom-tools, "-latest" aliases or dated previews.
+const GEMINI_CHAT = /^gemini-\d+(\.\d+)*-(pro|flash|flash-lite)(-preview)?$/
+const GEMINI_TIER = { pro: 0, flash: 1, 'flash-lite': 2 }
+
+export function relevantGeminiModels(models) {
+  return models
+    .filter(m => (m.supportedGenerationMethods || []).includes('generateContent'))
+    .map(m => ({ id: m.name.replace(/^models\//, ''), label: m.displayName || m.name }))
+    .filter(m => GEMINI_CHAT.test(m.id))
+    .sort((a, b) => byVersionDesc(a, b)
+      || GEMINI_TIER[a.id.match(/-(pro|flash-lite|flash)/)[1]] - GEMINI_TIER[b.id.match(/-(pro|flash-lite|flash)/)[1]]
+      || Number(a.id.endsWith('-preview')) - Number(b.id.endsWith('-preview')))
+}
+
 /* ---------- OpenAI ---------- */
 
 const OPENAI = 'https://api.openai.com/v1'
@@ -110,12 +150,7 @@ const openai = {
 
   async listModels(key, signal) {
     const data = await call('OpenAI', `${OPENAI}/models`, { headers: openaiHeaders(key), signal })
-    const chat = /^(gpt-|chatgpt-|o\d)/
-    const other = /(audio|realtime|transcribe|tts|image|embedding|moderation|search|instruct|codex|whisper|dall)/
-    return (data.data || [])
-      .filter(m => chat.test(m.id) && !other.test(m.id))
-      .sort((a, b) => (b.created || 0) - (a.created || 0))
-      .map(m => ({ id: m.id, label: m.id }))
+    return relevantOpenAiModels(data.data || [])
   },
 
   async complete({ key, model, system, user, signal, onRetry }) {
@@ -158,7 +193,7 @@ const anthropic = {
 
   async listModels(key, signal) {
     const data = await call('Anthropic', `${ANTHROPIC}/models?limit=1000`, { headers: anthropicHeaders(key), signal })
-    return (data.data || []).map(m => ({ id: m.id, label: m.display_name ? `${m.display_name} (${m.id})` : m.id }))
+    return relevantAnthropicModels(data.data || [])
   },
 
   async complete({ key, model, system, user, signal, onRetry }) {
@@ -188,11 +223,7 @@ const gemini = {
 
   async listModels(key, signal) {
     const data = await call('Gemini', `${GEMINI}/models?pageSize=1000`, { headers: geminiHeaders(key), signal })
-    const skip = /(embedding|imagen|veo|tts|image|audio|live|aqa)/
-    return (data.models || [])
-      .filter(m => (m.supportedGenerationMethods || []).includes('generateContent'))
-      .map(m => ({ id: m.name.replace(/^models\//, ''), label: m.displayName || m.name }))
-      .filter(m => !skip.test(m.id))
+    return relevantGeminiModels(data.models || [])
   },
 
   async complete({ key, model, system, user, signal, onRetry }) {

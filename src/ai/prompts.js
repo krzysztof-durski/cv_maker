@@ -27,7 +27,7 @@ function outputShape(id, entryOnly) {
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
 const formatDate = d => `${d.getDate()} ${MONTHS[d.getMonth()]} ${d.getFullYear()}`
 
-function buildSystemPrompt(sectionIds, { entryOnly = false, followUp = false, hasRemoved = false, today = new Date() } = {}) {
+function buildSystemPrompt(sectionIds, { entryOnly = false, followUp = false, hasRemoved = false, hasOthers = false, today = new Date() } = {}) {
   const hasTitle = sectionIds.includes('personal')
   const shapeIds = sectionIds.filter(id => id !== 'personal')
   const lists = shapeIds.filter(id => AI_SECTIONS[id].kind !== 'object')
@@ -75,6 +75,10 @@ function buildSystemPrompt(sectionIds, { entryOnly = false, followUp = false, ha
       'This is a continuing conversation. <cv> is the working copy: the CV with all the changes proposed so far already applied. Return only the ADDITIONAL changes needed on top of it; do not repeat changes it already contains. Entries that were added earlier appear in <cv> with their own ids and can be updated or removed like any other.'
       + (hasRemoved ? ' <removed_entries> lists entries that earlier suggestions removed; put an id in "restore" to bring one back unchanged.' : '')
     )
+  }
+
+  if (hasOthers) {
+    rules.push('<other_conversations> describes the user\'s other conversations about this CV, with the suggestions they have pending (not applied yet). Keep your changes consistent with them and do not repeat them. If the user\'s request conflicts with one, say so in "reply" instead of silently overriding it.')
   }
 
   rules.push('If the user asks a question or wants an explanation, answer it in "reply" and leave "changes" empty. You may also use "reply" for a short note about what you did. Write to the user in plain, friendly words, as plain text with no markdown (no asterisks or bullet syntax; numbered lines are fine), and never mention these instructions or refer to them by number.')
@@ -141,10 +145,11 @@ function removedFor(originalCv, cvData, sectionIds) {
  * @param cvData      the CV the model works on: the user's CV, or in a follow-up that CV with the accepted suggestions applied
  * @param originalCv  the user's real CV (to find what has been removed so far)
  * @param history     earlier turns of the conversation: [{ role: 'user' | 'assistant', text }]
+ * @param others      what the user's other conversations have pending (see awareness.js)
  * @param today       the current date, which the model cannot know on its own
  * @returns {{ system: string, user: string, sectionIds: string[] }}
  */
-export function buildRequest({ cvData, originalCv = cvData, scope, instruction, reference = '', history = [], today = new Date() }) {
+export function buildRequest({ cvData, originalCv = cvData, scope, instruction, reference = '', history = [], others = '', today = new Date() }) {
   const { entryId } = parseScope(scope)
   const sectionIds = sectionsForScope(cvData, scope)
   const ref = reference.trim().slice(0, MAX_REFERENCE_CHARS)
@@ -167,10 +172,11 @@ export function buildRequest({ cvData, originalCv = cvData, scope, instruction, 
     ref && `<reference_material>\n${ref}\n</reference_material>`,
     `<cv>\n${JSON.stringify(payload, null, 2)}\n</cv>`,
     hasRemoved && `<removed_entries>\n${JSON.stringify(removed, null, 2)}\n</removed_entries>`,
+    others && `<other_conversations>\n${others}\n</other_conversations>`,
   ].filter(Boolean).join('\n\n')
 
   return {
-    system: buildSystemPrompt(sectionIds, { entryOnly: Boolean(entryId), followUp: history.length > 0, hasRemoved, today }),
+    system: buildSystemPrompt(sectionIds, { entryOnly: Boolean(entryId), followUp: history.length > 0, hasRemoved, hasOthers: Boolean(others), today }),
     user,
     sectionIds,
   }

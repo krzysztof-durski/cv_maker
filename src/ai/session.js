@@ -22,10 +22,10 @@ export function groundingFrom(reference, messages) {
  *   draftCv is workingCv with the new answer applied; sections compares it with originalCv
  */
 export async function runTurn({
-  complete, originalCv, workingCv, scope, instruction, reference = '', messages = [], newId, signal, onRetry,
+  complete, originalCv, workingCv, scope, instruction, reference = '', messages = [], others = '', newId, signal, onRetry,
 }) {
   const history = messages.filter(m => m.role === 'user' || m.role === 'assistant')
-  const { system, user, sectionIds } = buildRequest({ cvData: workingCv, originalCv, scope, instruction, reference, history })
+  const { system, user, sectionIds } = buildRequest({ cvData: workingCv, originalCv, scope, instruction, reference, history, others })
 
   const text = await complete({ system, user, signal, onRetry })
   const { summary, reply, targetJobTitle, changes } = parseAiJson(text)

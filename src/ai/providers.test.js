@@ -1,7 +1,7 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 
-import { PROVIDERS, AiError, retryPolicy } from './providers.js'
+import { PROVIDERS, AiError, retryPolicy, relevantGeminiModels, relevantOpenAiModels, relevantAnthropicModels } from './providers.js'
 
 // Retries back off for seconds in the app; tests must not wait.
 retryPolicy.delaysMs = [0, 0, 0]
@@ -226,4 +226,46 @@ test('listing models also retries a transient failure', async t => {
   const models = await PROVIDERS.anthropic.listModels('KEY')
   assert.equal(models.length, 1)
   assert.equal(calls.length, 2)
+})
+
+/* ---------- only relevant models are offered ---------- */
+
+test('Gemini: only current text chat models, newest first, with the noise removed', () => {
+  const ids = [
+    'gemma-4-31b-it', 'gemini-flash-latest', 'gemini-flash-lite-latest', 'gemini-pro-latest', 'gemini-2.5-flash-lite',
+    'gemini-3-flash-preview', 'gemini-3.1-pro-preview', 'gemini-3.1-pro-preview-customtools', 'gemini-3.1-flash-lite-preview',
+    'gemini-3.1-flash-lite', 'nano-banana-pro-preview', 'gemini-3.5-flash', 'gemini-3.5-flash-lite', 'gemini-omni-flash-preview',
+    'gemini-omni-1.1-flash', 'gemini-3.5-transcribe', 'gemini-3.6-flash', 'gemini-3.7-flash', 'gemini-3.8-flash',
+    'lyria-3-clip-preview', 'lyria-3-pro-preview', 'lyria-3.5', 'gemini-robotics-er-2-preview',
+    'gemini-2.5-computer-use-preview-10-2025', 'antigravity-preview-05-2026', 'antigravity-preview-latest',
+    'deep-research-max-preview-04-2026', 'deep-research-pro-preview-12-2025', 'gemini-2.5-pro', 'gemini-2.5-flash',
+  ]
+  const raw = ids.map(id => ({ name: `models/${id}`, supportedGenerationMethods: ['generateContent'] }))
+  assert.deepEqual(relevantGeminiModels(raw).map(m => m.id), [
+    'gemini-3.8-flash', 'gemini-3.7-flash', 'gemini-3.6-flash',
+    'gemini-3.5-flash', 'gemini-3.5-flash-lite',
+    'gemini-3.1-pro-preview', 'gemini-3.1-flash-lite', 'gemini-3.1-flash-lite-preview',
+    'gemini-3-flash-preview',
+    'gemini-2.5-pro', 'gemini-2.5-flash', 'gemini-2.5-flash-lite',
+  ])
+})
+
+test('OpenAI: chat and reasoning models only, no dated snapshots, audio, image or search variants', () => {
+  const ids = ['gpt-5', 'gpt-5-mini', 'gpt-5-nano', 'gpt-5-pro', 'gpt-4.1', 'gpt-4o', 'gpt-4o-mini', 'o3', 'o4-mini', 'o3-pro',
+    'gpt-4o-2024-08-06', 'gpt-5-2025-08-07', 'gpt-4o-audio-preview', 'gpt-4o-realtime-preview', 'gpt-image-1', 'gpt-4o-search-preview',
+    'gpt-4o-transcribe', 'gpt-4o-mini-tts', 'text-embedding-3-large', 'whisper-1', 'dall-e-3', 'omni-moderation-latest',
+    'gpt-3.5-turbo-instruct', 'codex-mini-latest', 'chatgpt-4o-latest', 'babbage-002']
+  const found = relevantOpenAiModels(ids.map((id, i) => ({ id, created: 1000 - i }))).map(m => m.id)
+  assert.deepEqual(found, ['gpt-5', 'gpt-5-mini', 'gpt-5-nano', 'gpt-5-pro', 'gpt-4.1', 'gpt-4o', 'gpt-4o-mini', 'o3', 'o4-mini', 'o3-pro'])
+})
+
+test('Anthropic: Claude models only, preferring the undated name over its dated snapshot', () => {
+  const found = relevantAnthropicModels([
+    { id: 'claude-sonnet-5-5', display_name: 'Claude Sonnet 5.5' },
+    { id: 'claude-sonnet-4-5', display_name: 'Claude Sonnet 4.5' },
+    { id: 'claude-sonnet-4-5-20250929', display_name: 'Claude Sonnet 4.5' },
+    { id: 'claude-3-haiku-20240307', display_name: 'Claude Haiku 3' }, // no alias: kept
+    { id: 'something-else' },
+  ])
+  assert.deepEqual(found.map(m => m.id), ['claude-sonnet-5-5', 'claude-sonnet-4-5', 'claude-3-haiku-20240307'])
 })

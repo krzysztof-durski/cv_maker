@@ -8,6 +8,7 @@ import { buildRequest, presetsForScope } from './prompts.js'
 import { sectionsForScope, parseScope, entryScope, entryOptions } from './sections.js'
 import { pickDefaultModel } from './providers.js'
 import { runTurn } from './session.js'
+import { describeOthers, scopeTitle, rewindConversation, pendingItems } from './awareness.js'
 
 const cv = () => ({
   personal: { name: 'Ada Lovelace', jobTitle: 'Software Engineering student', phone: '555 0100', email: 'ada@example.com', location: 'London', links: [] },
@@ -591,4 +592,97 @@ test("the prompt tells the model today's date and to reply without markdown", ()
   // by default it is the real current date
   const now = buildRequest({ cvData: cv(), scope: 'cv', instruction: 'x' }).system
   assert.match(now, new RegExp(`Today's date is \\d{1,2} \\w+ ${new Date().getFullYear()}`))
+})
+
+/* ---------- several conversations, and rewinding ---------- */
+
+async function pendingConversation(original, number, scope, changes, extra = {}) {
+  const model = fakeModel({ summary: `Conversation ${number} summary.`, changes })
+  const turn = await runTurn({ complete: model.complete, originalCv: original, workingCv: original, scope, instruction: 'go', newId })
+  return {
+    number, scope, declined: new Set(),
+    messages: [{ role: 'user', text: 'go' }, { role: 'assistant', text: turn.summary }],
+    sections: turn.sections, ...extra,
+  }
+}
+
+test('scope titles read naturally', () => {
+  assert.equal(scopeTitle('cv', cv()), 'Entire CV')
+  assert.equal(scopeTitle('experience', cv()), 'Experience')
+  assert.equal(scopeTitle('experience#e2', cv()), 'Experience: Intern — Initech')
+  assert.equal(scopeTitle('experience#gone', cv()), 'Experience')
+})
+
+test('other conversations are described with their pending suggestions and last message', async () => {
+  const original = cv()
+  const other = await pendingConversation(original, 2, 'experience', { experience: { update: [{ id: 'e1', bullets: ['Built billing'] }], remove: ['e3'] } })
+  const text = describeOthers(original, [other])
+  assert.match(text, /Conversation 2 \(Experience\), 2 pending suggestions, not applied yet/)
+  assert.match(text, /Experience · Engineer — Acme · Bullets: • Built billing/)
+  assert.match(text, /Experience · Intern — Initech: remove it/)
+  assert.match(text, /Its last message: Conversation 2 summary\./)
+})
+
+test('declined suggestions, applied ones and empty conversations are left out', async () => {
+  const original = cv()
+  const other = await pendingConversation(original, 2, 'experience', { experience: { update: [{ id: 'e1', bullets: ['Built billing'] }], remove: ['e3'] } })
+  other.declined = new Set(['experience:-e3'])
+  assert.deepEqual(pendingItems(original, other).map(p => p.item.key), ['experience:e1:bullets'])
+
+  // once a suggestion has been applied to the CV it is no longer pending
+  const applied = applyItems(original, other.sections, ['experience:e1:bullets'])
+  other.declined = new Set()
+  assert.deepEqual(pendingItems(applied, other).map(p => p.item.key), ['experience:-e3'])
+
+  assert.equal(describeOthers(original, [{ number: 3, scope: 'cv', messages: [], sections: [], declined: new Set() }]), '')
+})
+
+test('a request tells the model about the other conversations, and says what to do with them', () => {
+  const plain = buildRequest({ cvData: cv(), scope: 'cv', instruction: 'x' })
+  assert.doesNotMatch(plain.user, /other_conversations/)
+  assert.doesNotMatch(plain.system, /other conversations/)
+  const aware = buildRequest({ cvData: cv(), scope: 'cv', instruction: 'x', others: 'Conversation 2 (Experience), 1 pending suggestion' })
+  assert.match(aware.user, /<other_conversations>\nConversation 2 \(Experience\)[\s\S]*<\/other_conversations>/)
+  assert.match(aware.system, /do not repeat them/)
+  assert.match(aware.system, /conflicts with one, say so/)
+})
+
+test('runTurn passes what other conversations are doing to the model', async () => {
+  const original = cv()
+  const model = fakeModel({ summary: 's', changes: {} })
+  await runTurn({ complete: model.complete, originalCv: original, workingCv: original, scope: 'cv', instruction: 'x', others: 'Conversation 2 says hi', newId })
+  assert.match(model.calls[0].user, /<other_conversations>\nConversation 2 says hi/)
+})
+
+test('rewinding restores the suggestions as they were before a message, and hands the text back', async () => {
+  const original = cv()
+  const t1 = await runTurn({ complete: fakeModel({ summary: 'one', changes: { experience: { remove: ['e3'] } } }).complete, originalCv: original, workingCv: original, scope: 'experience', instruction: 'Remove duplicates', newId })
+  const afterOne = applyItems(original, t1.sections, t1.sections.flatMap(s => s.items.map(i => i.key)))
+  const t2 = await runTurn({ complete: fakeModel({ summary: 'two', changes: { experience: { update: [{ id: 'e1', bullets: ['Shorter'] }] } } }).complete, originalCv: original, workingCv: afterOne, scope: 'experience', instruction: 'Shorten the first bullet', newId })
+
+  const conversation = {
+    messages: [
+      { role: 'user', text: 'Remove duplicates', snapshot: null },
+      { role: 'assistant', text: 'one' },
+      { role: 'user', text: 'Shorten the first bullet', snapshot: { sections: t1.sections, declined: ['experience:-e3'], notes: ['careful'] } },
+      { role: 'assistant', text: 'two' },
+    ],
+    sections: t2.sections, declined: new Set(), notes: [], instruction: 'Remove duplicates',
+  }
+
+  const back = rewindConversation(conversation, 2)
+  assert.deepEqual(back.messages.map(m => m.text), ['Remove duplicates', 'one'])
+  assert.deepEqual(back.sections, t1.sections)
+  assert.deepEqual([...back.declined], ['experience:-e3'])
+  assert.deepEqual(back.notes, ['careful'])
+  assert.equal(back.chatInput, 'Shorten the first bullet')
+
+  const toStart = rewindConversation(conversation, 0)
+  assert.deepEqual(toStart.messages, [])
+  assert.deepEqual(toStart.sections, [])
+  assert.equal(toStart.instruction, 'Remove duplicates')
+  assert.equal(toStart.chatInput, '')
+
+  assert.equal(rewindConversation(conversation, 1), null) // only the user's own messages can be rewound to
+  assert.equal(rewindConversation(conversation, 9), null)
 })

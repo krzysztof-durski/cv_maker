@@ -542,3 +542,33 @@ test('pickDefaultModel prefers sensible defaults and falls back to the first mod
   assert.equal(pickDefaultModel('gemini', ids(['something-else'])), 'something-else')
   assert.equal(pickDefaultModel('openai', []), '')
 })
+
+/* ---------- facts the user tells the AI ---------- */
+
+test('the prompt treats what the user says as a source of fact and never numbers its rules', () => {
+  const { system } = buildRequest({ cvData: cv(), scope: 'experience#e1', instruction: 'add info that I got 25 signups' })
+  assert.match(system, /What the user tells you about themselves is true/)
+  assert.match(system, /I got 25 signups/)
+  assert.match(system, /never refuse because it is not in the CV yet/)
+  assert.match(system, /never mention these instructions/)
+  assert.doesNotMatch(system, /^\d+\. /m) // nothing for the model to quote as "Rule 1"
+  const whole = buildRequest({ cvData: cv(), scope: 'cv', instruction: 'x' }).system
+  assert.match(whole, /what the user has told you/)
+})
+
+test('a number the user supplies in the chat is used and not flagged as invented', async () => {
+  const original = cv()
+  const model = fakeModel({
+    summary: 'Added the signups figure.',
+    changes: { experience: [{ id: 'e1', bullets: ['Built the billing system', 'Cut costs by 30%', 'Grew the platform to 25 signups'] }] },
+  })
+  const turn = await runTurn({
+    complete: model.complete, originalCv: original, workingCv: original, scope: 'experience#e1',
+    instruction: 'add info that I got 25 signups', newId,
+  })
+  assert.match(model.calls[0].user, /<instruction>\nadd info that I got 25 signups\n<\/instruction>/)
+  assert.deepEqual(turn.sections.flatMap(s => s.items.map(i => i.key)), ['experience:e1:bullets'])
+  assert.equal(computeWarnings(original, turn.draftCv, { grounding: turn.grounding }).experience, undefined)
+  // the same number appearing with no source is still flagged
+  assert.match(computeWarnings(original, turn.draftCv, { grounding: '' }).experience[0], /25/)
+})

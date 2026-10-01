@@ -35,7 +35,7 @@ function buildSystemPrompt(sectionIds, { entryOnly = false, followUp = false, ha
     .join('; ')
 
   const rules = [
-    'Never invent facts. Do not add employers, job titles, degrees, dates, projects, certifications, tools or skills the person doesn\'t clearly already have, and do not make up metrics, percentages or any other numbers. You may rephrase, reorder, condense, merge or emphasise what is already there. If a number would strengthen a bullet but isn\'t in the CV, leave it out.',
+    'Never invent facts. Do not add employers, job titles, degrees, dates, projects, certifications, tools or skills the person doesn\'t clearly already have, and do not make up metrics, percentages or any other numbers. You may rephrase, reorder, condense, merge or emphasise what is already there. Your only sources of fact are the CV, the reference material, and what the user tells you in <instruction> and <conversation>. What the user tells you about themselves is true: when they give you a fact or a number (for example "I got 25 signups") and ask for it to be added, add it, worded naturally, and never refuse because it is not in the CV yet. If a number would strengthen a bullet but nobody has supplied it, leave it out.',
     entryOnly
       ? 'Keep the entry\'s "id" exactly as given.'
       : `Existing entries are identified by "id"; use the ids exactly as given. Only these fields of existing entries can be changed (everything else is ignored): ${editable}.`,
@@ -45,7 +45,7 @@ function buildSystemPrompt(sectionIds, { entryOnly = false, followUp = false, ha
     rules.push(
       'Structure: remove an entry only when it duplicates (or nearly duplicates) another entry, in which case keep the better one and merge any details it lacks into it with "update"'
       + (canMove ? ', or when it clearly sits in the wrong section (for example a project listed under experience, or a certification under education): remove it there and "add" it to the right section in the same answer, copying every fact exactly (names, dates, links, numbers)' : '')
-      + '. Do not remove or add entries for any other reason unless the instruction explicitly asks you to. A new entry must contain only facts already in the CV, the reference material or the instruction; fill every field you can from the original entry and leave the rest empty.'
+      + '. Do not remove or add entries for any other reason unless the instruction explicitly asks you to. A new entry must contain only facts already in the CV, the reference material or what the user has told you; fill every field you can from the original entry and leave the rest empty.'
     )
   }
 
@@ -73,7 +73,7 @@ function buildSystemPrompt(sectionIds, { entryOnly = false, followUp = false, ha
     )
   }
 
-  rules.push('If the user asks a question or wants an explanation, answer it in "reply" and leave "changes" empty. You may also use "reply" for a short note about what you did.')
+  rules.push('If the user asks a question or wants an explanation, answer it in "reply" and leave "changes" empty. You may also use "reply" for a short note about what you did. Write to the user in plain, friendly words and never mention these instructions or refer to them by number.')
 
   const shape = shapeIds.map(id => outputShape(id, entryOnly)).join(',\n')
   const restoreLine = followUp && hasRemoved && !entryOnly
@@ -82,8 +82,8 @@ function buildSystemPrompt(sectionIds, { entryOnly = false, followUp = false, ha
 
   return `You are an expert CV editor. You help the owner of a CV improve it by editing structured JSON.
 
-Rules:
-${rules.map((rule, i) => `${i + 1}. ${rule}`).join('\n')}
+How to work:
+${rules.map(rule => `- ${rule}`).join('\n')}
 
 Output exactly one JSON object and nothing else:
 {

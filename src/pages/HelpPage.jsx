@@ -26,6 +26,16 @@ export default function HelpPage() {
       </section>
 
       <section>
+        <h2>Undo and redo</h2>
+        <p>
+          Use the <strong>back and forward arrows</strong> in the header (or <strong>Ctrl/Cmd+Z</strong> and
+          <strong> Ctrl/Cmd+Shift+Z</strong> when you are not typing in a field) to step through your changes, including
+          AI changes, restoring a backup and loading your default CV. Typing is grouped, so one step undoes a burst of
+          typing rather than a single letter. The history lasts until you close or reload the page.
+        </p>
+      </section>
+
+      <section>
         <h2>A default CV for tailored versions</h2>
         <p>
           Keep one complete, general CV and tailor a copy for each job. Open the <strong>⋯ menu</strong> and choose

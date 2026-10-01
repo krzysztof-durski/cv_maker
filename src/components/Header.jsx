@@ -17,11 +17,13 @@ const MenuIcon = (p) => <Icon {...p} path={<><circle cx="12" cy="5" r="1.4" /><c
 const SaveIcon = (p) => <Icon {...p} path={<><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z" /><path d="M17 21v-8H7v8M7 3v5h8" /></>} />
 const UploadIcon = (p) => <Icon {...p} path={<><path d="M12 21V9" /><path d="m7 14 5-5 5 5" /><path d="M5 3h14" /></>} />
 const TrashIcon = (p) => <Icon {...p} path={<><path d="M3 6h18" /><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" /><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" /></>} />
+const UndoIcon = (p) => <Icon {...p} path={<><path d="M9 14 4 9l5-5" /><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11" /></>} />
+const RedoIcon = (p) => <Icon {...p} path={<><path d="m15 14 5-5-5-5" /><path d="M20 9H9.5a5.5 5.5 0 0 0 0 11H13" /></>} />
 const StarIcon = (p) => <Icon {...p} path={<path d="m12 2 3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z" />} />
 const FileTextIcon = (p) => <Icon {...p} path={<><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z" /><path d="M14 2v6h6" /><path d="M9 13h6M9 17h6" /></>} />
 
 /* ---------- overflow menu ---------- */
-function OverflowMenu({ onDownload, onUpload, onReset, onExportDocx, exportingDocx, onAiSettings, hasMaster, masterSavedAt, onSaveMaster, onLoadMaster }) {
+function OverflowMenu({ onDownload, onUpload, onReset, onExportDocx, exportingDocx, onAiSettings, hasMaster, masterSavedAt, onSaveMaster, onLoadMaster, canUndo, canRedo, onUndo, onRedo }) {
   const [open, setOpen] = useState(false)
   const wrapRef = useRef(null)
   const fileInputRef = useRef(null)
@@ -55,6 +57,16 @@ function OverflowMenu({ onDownload, onUpload, onReset, onExportDocx, exportingDo
           role="menu"
           className="absolute right-0 mt-2 w-56 origin-top-right overflow-hidden rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 shadow-lg animate-menu-in z-50"
         >
+          {/* On phones the header has no room for the arrows, so undo and redo live here. */}
+          <div className="sm:hidden">
+            <button role="menuitem" className={`${item} disabled:cursor-default disabled:opacity-40`} disabled={!canUndo} onClick={close(onUndo)}>
+              <UndoIcon className="h-4 w-4 text-gray-400" /> Undo
+            </button>
+            <button role="menuitem" className={`${item} disabled:cursor-default disabled:opacity-40`} disabled={!canRedo} onClick={close(onRedo)}>
+              <RedoIcon className="h-4 w-4 text-gray-400" /> Redo
+            </button>
+            <div className="my-1 border-t border-gray-100 dark:border-gray-800" />
+          </div>
           <button role="menuitem" className={item} onClick={close(onDownload)}>
             <SaveIcon className="h-4 w-4 text-gray-400" /> Save backup
           </button>
@@ -121,7 +133,7 @@ function OverflowMenu({ onDownload, onUpload, onReset, onExportDocx, exportingDo
 }
 
 /* ---------- header ---------- */
-export default function Header({ onReset, onPrint, onDownload, onUpload, onExportDocx, exportingDocx, hasMaster, masterSavedAt, onSaveMaster, onLoadMaster, isDark, onToggleDark, mobileView, onMobileViewChange }) {
+export default function Header({ onReset, onPrint, onDownload, onUpload, onExportDocx, exportingDocx, hasMaster, masterSavedAt, onSaveMaster, onLoadMaster, canUndo, canRedo, onUndo, onRedo, isDark, onToggleDark, mobileView, onMobileViewChange }) {
   const ai = useAi()
   const seg = (active) =>
     `px-3 py-1 text-xs font-semibold rounded-md transition-colors ${
@@ -154,6 +166,24 @@ export default function Header({ onReset, onPrint, onDownload, onUpload, onExpor
 
       {/* Actions */}
       <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
+        <div className="hidden items-center sm:flex">
+          {[
+            { label: 'Undo', hint: 'Ctrl/Cmd+Z', icon: <UndoIcon />, enabled: canUndo, run: onUndo },
+            { label: 'Redo', hint: 'Ctrl/Cmd+Shift+Z', icon: <RedoIcon />, enabled: canRedo, run: onRedo },
+          ].map(b => (
+            <button
+              key={b.label}
+              onClick={b.run}
+              disabled={!b.enabled}
+              title={`${b.label} (${b.hint})`}
+              aria-label={b.label}
+              className="grid h-9 w-8 place-items-center rounded-lg text-gray-600 transition-colors hover:bg-gray-100 disabled:cursor-default disabled:opacity-30 disabled:hover:bg-transparent dark:text-gray-300 dark:hover:bg-gray-800 sm:w-9"
+            >
+              {b.icon}
+            </button>
+          ))}
+        </div>
+
         {ai && (
           <button
             onClick={() => ai.openAssistant('cv')}
@@ -193,6 +223,10 @@ export default function Header({ onReset, onPrint, onDownload, onUpload, onExpor
           masterSavedAt={masterSavedAt}
           onSaveMaster={onSaveMaster}
           onLoadMaster={onLoadMaster}
+          canUndo={canUndo}
+          canRedo={canRedo}
+          onUndo={onUndo}
+          onRedo={onRedo}
         />
       </div>
     </header>

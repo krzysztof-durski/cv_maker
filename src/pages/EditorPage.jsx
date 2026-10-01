@@ -8,10 +8,12 @@ import CVPreview from '../components/preview/CVPreview'
 import { AiProvider } from '../components/ai/AiProvider'
 import { useAiSettings } from '../components/ai/useAiSettings'
 import { useMasterCv } from '../hooks/useMasterCv'
+import { useHistory } from '../hooks/useHistory'
 import { pdfFileName } from '../utils/pdfFileName'
 
 export default function EditorPage() {
-  const [cvData, setCvData] = useLocalStorage('cv_maker_data', DEFAULT_DATA)
+  const [cvData, setStoredCv] = useLocalStorage('cv_maker_data', DEFAULT_DATA)
+  const { set: setCvData, undo, redo, clear: clearHistory, canUndo, canRedo } = useHistory(cvData, setStoredCv)
   const aiSettings = useAiSettings()
   const { master, save: saveMaster, clear: clearMaster } = useMasterCv()
   const [isDark, toggleDark] = useDarkMode()
@@ -25,7 +27,8 @@ export default function EditorPage() {
       window.localStorage.removeItem('cv_maker_data')
       aiSettings.clearAll()
       clearMaster()
-      setCvData(DEFAULT_DATA)
+      setStoredCv(DEFAULT_DATA)
+      clearHistory() // "permanently delete" means the history too
     }
   }
 
@@ -113,6 +116,10 @@ export default function EditorPage() {
           onUpload={handleUpload}
           onExportDocx={handleExportDocx}
           exportingDocx={exportingDocx}
+          canUndo={canUndo}
+          canRedo={canRedo}
+          onUndo={undo}
+          onRedo={redo}
           masterSavedAt={master?.savedAt || null}
           hasMaster={Boolean(master)}
           onSaveMaster={handleSaveMaster}

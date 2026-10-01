@@ -30,6 +30,9 @@ export default function PrivacyPage() {
           and it cannot be read by anyone other than you on your device.
         </p>
         <p className="mt-2">
+          If you save a default CV, a copy is kept in the same way under <code>cv_maker_master</code>.
+        </p>
+        <p className="mt-2">
           If you use the AI assistant, your chosen provider, model and API key are kept under separate keys
           starting with <code>cv_maker_ai_</code>. By default the key lives in <code>sessionStorage</code> and is
           forgotten when you close the tab; it is saved in <code>localStorage</code> only if you tick
@@ -93,7 +96,7 @@ export default function PrivacyPage() {
           </li>
           <li>
             <strong>Browser DevTools:</strong> Open DevTools → Application tab → Local Storage →
-            select this site → delete the <code>cv_maker_data</code> key and any keys starting with <code>cv_maker_ai_</code>.
+            select this site → delete the <code>cv_maker_data</code> and <code>cv_maker_master</code> keys and any keys starting with <code>cv_maker_ai_</code>.
           </li>
           <li>
             <strong>Browser settings:</strong> Clear site data for this domain in your browser's

@@ -26,6 +26,20 @@ export default function HelpPage() {
       </section>
 
       <section>
+        <h2>A default CV for tailored versions</h2>
+        <p>
+          Keep one complete, general CV and tailor a copy for each job. Open the <strong>⋯ menu</strong> and choose
+          <strong> Save as default CV</strong> to store the CV you are editing as your default. Whenever you start a new
+          application, choose <strong>Load default CV</strong> to bring it back, then tailor it by hand or with the AI
+          assistant. Tailoring never changes the saved default; saving again replaces it.
+        </p>
+        <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+          Like everything else it is stored only in this browser. Use <strong>Save backup</strong> to keep a copy of the current
+          CV as a file; the default is not included in backups.
+        </p>
+      </section>
+
+      <section>
         <h2>Exporting as PDF</h2>
         <ol>
           <li>Click <strong>Save PDF</strong> in the header.</li>

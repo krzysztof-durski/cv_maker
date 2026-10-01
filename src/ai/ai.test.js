@@ -582,3 +582,13 @@ test('a number the user supplies in the chat is used and not flagged as invented
   // the same number appearing with no source is still flagged
   assert.match(computeWarnings(original, turn.draftCv, { grounding: '' }).experience[0], /25/)
 })
+
+test("the prompt tells the model today's date and to reply without markdown", () => {
+  const { system } = buildRequest({ cvData: cv(), scope: 'cv', instruction: 'x', today: new Date(2026, 9, 1) })
+  assert.match(system, /Today's date is 1 October 2026/)
+  assert.match(system, /never assume the current year is earlier than it is/)
+  assert.match(system, /no markdown/)
+  // by default it is the real current date
+  const now = buildRequest({ cvData: cv(), scope: 'cv', instruction: 'x' }).system
+  assert.match(now, new RegExp(`Today's date is \\d{1,2} \\w+ ${new Date().getFullYear()}`))
+})

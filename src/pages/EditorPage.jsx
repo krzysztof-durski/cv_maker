@@ -7,25 +7,50 @@ import EditorPanel from '../components/editor/EditorPanel'
 import CVPreview from '../components/preview/CVPreview'
 import { AiProvider } from '../components/ai/AiProvider'
 import { useAiSettings } from '../components/ai/useAiSettings'
+import { useMasterCv } from '../hooks/useMasterCv'
+import { pdfFileName } from '../utils/pdfFileName'
 
 export default function EditorPage() {
   const [cvData, setCvData] = useLocalStorage('cv_maker_data', DEFAULT_DATA)
   const aiSettings = useAiSettings()
+  const { master, save: saveMaster, clear: clearMaster } = useMasterCv()
   const [isDark, toggleDark] = useDarkMode()
   const [mobileView, setMobileView] = useState('edit') // 'edit' | 'preview' — only used below lg
   const [exportingDocx, setExportingDocx] = useState(false)
 
   const handleReset = () => {
     if (window.confirm(
-      'This will permanently delete all your CV data and any saved AI API key, and cannot be undone. Are you sure?'
+      'This will permanently delete all your CV data, your saved default CV and any saved AI API key, and cannot be undone. Are you sure?'
     )) {
       window.localStorage.removeItem('cv_maker_data')
       aiSettings.clearAll()
+      clearMaster()
       setCvData(DEFAULT_DATA)
     }
   }
 
-  const handlePrint = () => window.print()
+  // The browser names the saved PDF after the page title, so use "Role_Name_Surname_CV" while printing.
+  const handlePrint = () => {
+    const title = document.title
+    const restore = () => { document.title = title; window.removeEventListener('afterprint', restore) }
+    document.title = pdfFileName(cvData.personal)
+    window.addEventListener('afterprint', restore)
+    window.print()
+    // Some browsers don't fire afterprint; print() blocks until the dialog closes, so restoring here is safe too.
+    restore()
+  }
+
+  const handleSaveMaster = () => {
+    if (master && !window.confirm('Replace your saved default CV with the CV you are editing now?')) return
+    if (!saveMaster(cvData)) alert('Could not save the default CV: the browser storage is full or blocked.')
+  }
+
+  const handleLoadMaster = () => {
+    if (!master) return
+    if (window.confirm('Replace the CV you are editing with your saved default CV? Your current edits will be lost unless you save a backup first.')) {
+      setCvData(master.data)
+    }
+  }
 
   const handleDownload = () => {
     const now = new Date()
@@ -88,6 +113,10 @@ export default function EditorPage() {
           onUpload={handleUpload}
           onExportDocx={handleExportDocx}
           exportingDocx={exportingDocx}
+          masterSavedAt={master?.savedAt || null}
+          hasMaster={Boolean(master)}
+          onSaveMaster={handleSaveMaster}
+          onLoadMaster={handleLoadMaster}
           isDark={isDark}
           onToggleDark={toggleDark}
           mobileView={mobileView}

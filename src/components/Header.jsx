@@ -17,10 +17,11 @@ const MenuIcon = (p) => <Icon {...p} path={<><circle cx="12" cy="5" r="1.4" /><c
 const SaveIcon = (p) => <Icon {...p} path={<><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z" /><path d="M17 21v-8H7v8M7 3v5h8" /></>} />
 const UploadIcon = (p) => <Icon {...p} path={<><path d="M12 21V9" /><path d="m7 14 5-5 5 5" /><path d="M5 3h14" /></>} />
 const TrashIcon = (p) => <Icon {...p} path={<><path d="M3 6h18" /><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" /><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" /></>} />
+const StarIcon = (p) => <Icon {...p} path={<path d="m12 2 3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z" />} />
 const FileTextIcon = (p) => <Icon {...p} path={<><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z" /><path d="M14 2v6h6" /><path d="M9 13h6M9 17h6" /></>} />
 
 /* ---------- overflow menu ---------- */
-function OverflowMenu({ onDownload, onUpload, onReset, onExportDocx, exportingDocx, onAiSettings }) {
+function OverflowMenu({ onDownload, onUpload, onReset, onExportDocx, exportingDocx, onAiSettings, hasMaster, masterSavedAt, onSaveMaster, onLoadMaster }) {
   const [open, setOpen] = useState(false)
   const wrapRef = useRef(null)
   const fileInputRef = useRef(null)
@@ -71,6 +72,26 @@ function OverflowMenu({ onDownload, onUpload, onReset, onExportDocx, exportingDo
 
           <div className="my-1 border-t border-gray-100 dark:border-gray-800" />
 
+          <button role="menuitem" className={item} onClick={close(onSaveMaster)} title="Keep a copy of this CV to start every tailored version from">
+            <StarIcon className="h-4 w-4 text-gray-400" /> Save as default CV
+          </button>
+          <button
+            role="menuitem"
+            className={`${item} disabled:cursor-not-allowed disabled:opacity-50`}
+            disabled={!hasMaster}
+            onClick={close(onLoadMaster)}
+          >
+            <UploadIcon className="h-4 w-4 text-gray-400" />
+            <span className="flex flex-col items-start leading-tight">
+              Load default CV
+              <span className="text-[11px] text-gray-400">
+                {hasMaster ? `Saved ${new Date(masterSavedAt).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' })}` : 'None saved yet'}
+              </span>
+            </span>
+          </button>
+
+          <div className="my-1 border-t border-gray-100 dark:border-gray-800" />
+
           <Link role="menuitem" to="/help" className={item} onClick={() => setOpen(false)}>Help &amp; guide</Link>
           <Link role="menuitem" to="/about" className={item} onClick={() => setOpen(false)}>About</Link>
           <Link role="menuitem" to="/terms" className={item} onClick={() => setOpen(false)}>Terms</Link>
@@ -100,7 +121,7 @@ function OverflowMenu({ onDownload, onUpload, onReset, onExportDocx, exportingDo
 }
 
 /* ---------- header ---------- */
-export default function Header({ onReset, onPrint, onDownload, onUpload, onExportDocx, exportingDocx, isDark, onToggleDark, mobileView, onMobileViewChange }) {
+export default function Header({ onReset, onPrint, onDownload, onUpload, onExportDocx, exportingDocx, hasMaster, masterSavedAt, onSaveMaster, onLoadMaster, isDark, onToggleDark, mobileView, onMobileViewChange }) {
   const ai = useAi()
   const seg = (active) =>
     `px-3 py-1 text-xs font-semibold rounded-md transition-colors ${
@@ -168,6 +189,10 @@ export default function Header({ onReset, onPrint, onDownload, onUpload, onExpor
           onExportDocx={onExportDocx}
           exportingDocx={exportingDocx}
           onAiSettings={ai?.openSettings}
+          hasMaster={hasMaster}
+          masterSavedAt={masterSavedAt}
+          onSaveMaster={onSaveMaster}
+          onLoadMaster={onLoadMaster}
         />
       </div>
     </header>

@@ -24,7 +24,10 @@ function outputShape(id, entryOnly) {
   ].join('\n')
 }
 
-function buildSystemPrompt(sectionIds, { entryOnly = false, followUp = false, hasRemoved = false } = {}) {
+const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+const formatDate = d => `${d.getDate()} ${MONTHS[d.getMonth()]} ${d.getFullYear()}`
+
+function buildSystemPrompt(sectionIds, { entryOnly = false, followUp = false, hasRemoved = false, today = new Date() } = {}) {
   const hasTitle = sectionIds.includes('personal')
   const shapeIds = sectionIds.filter(id => id !== 'personal')
   const lists = shapeIds.filter(id => AI_SECTIONS[id].kind !== 'object')
@@ -35,6 +38,7 @@ function buildSystemPrompt(sectionIds, { entryOnly = false, followUp = false, ha
     .join('; ')
 
   const rules = [
+    `Today's date is ${formatDate(today)}. Use it to judge dates: anything up to and including today is in the past, "Present" means ongoing today, and a date after today is a future or planned date. Only question a date if it is clearly inconsistent (for example an end date before its start date); never assume the current year is earlier than it is.`,
     'Never invent facts. Do not add employers, job titles, degrees, dates, projects, certifications, tools or skills the person doesn\'t clearly already have, and do not make up metrics, percentages or any other numbers. You may rephrase, reorder, condense, merge or emphasise what is already there. Your only sources of fact are the CV, the reference material, and what the user tells you in <instruction> and <conversation>. What the user tells you about themselves is true: when they give you a fact or a number (for example "I got 25 signups") and ask for it to be added, add it, worded naturally, and never refuse because it is not in the CV yet. If a number would strengthen a bullet but nobody has supplied it, leave it out.',
     entryOnly
       ? 'Keep the entry\'s "id" exactly as given.'
@@ -73,7 +77,7 @@ function buildSystemPrompt(sectionIds, { entryOnly = false, followUp = false, ha
     )
   }
 
-  rules.push('If the user asks a question or wants an explanation, answer it in "reply" and leave "changes" empty. You may also use "reply" for a short note about what you did. Write to the user in plain, friendly words and never mention these instructions or refer to them by number.')
+  rules.push('If the user asks a question or wants an explanation, answer it in "reply" and leave "changes" empty. You may also use "reply" for a short note about what you did. Write to the user in plain, friendly words, as plain text with no markdown (no asterisks or bullet syntax; numbered lines are fine), and never mention these instructions or refer to them by number.')
 
   const shape = shapeIds.map(id => outputShape(id, entryOnly)).join(',\n')
   const restoreLine = followUp && hasRemoved && !entryOnly
@@ -137,9 +141,10 @@ function removedFor(originalCv, cvData, sectionIds) {
  * @param cvData      the CV the model works on: the user's CV, or in a follow-up that CV with the accepted suggestions applied
  * @param originalCv  the user's real CV (to find what has been removed so far)
  * @param history     earlier turns of the conversation: [{ role: 'user' | 'assistant', text }]
+ * @param today       the current date, which the model cannot know on its own
  * @returns {{ system: string, user: string, sectionIds: string[] }}
  */
-export function buildRequest({ cvData, originalCv = cvData, scope, instruction, reference = '', history = [] }) {
+export function buildRequest({ cvData, originalCv = cvData, scope, instruction, reference = '', history = [], today = new Date() }) {
   const { entryId } = parseScope(scope)
   const sectionIds = sectionsForScope(cvData, scope)
   const ref = reference.trim().slice(0, MAX_REFERENCE_CHARS)
@@ -165,7 +170,7 @@ export function buildRequest({ cvData, originalCv = cvData, scope, instruction, 
   ].filter(Boolean).join('\n\n')
 
   return {
-    system: buildSystemPrompt(sectionIds, { entryOnly: Boolean(entryId), followUp: history.length > 0, hasRemoved }),
+    system: buildSystemPrompt(sectionIds, { entryOnly: Boolean(entryId), followUp: history.length > 0, hasRemoved, today }),
     user,
     sectionIds,
   }

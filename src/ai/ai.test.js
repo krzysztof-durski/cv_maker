@@ -451,6 +451,16 @@ test('a follow-up carries the conversation, the working copy and what was remove
   assert.match(system, /"restore"/)
 })
 
+test('"Any suggestions?" is offered for the whole CV, every section and every single entry', () => {
+  for (const scope of ['cv', 'profile', 'experience', 'education', 'projects', 'skills', 'volunteer', 'custom', 'experience#e1', 'projects#p1']) {
+    assert.ok(presetsForScope(scope).some(p => p.id === 'suggest' && p.label === 'Any suggestions?'), scope)
+  }
+  const suggest = presetsForScope('cv').find(p => p.id === 'suggest')
+  assert.match(suggest.instruction, /in your reply/)
+  assert.match(suggest.instruction, /Do not change anything yet/)
+  assert.equal(suggest.needsReference, undefined) // works with or without a job description
+})
+
 test('presets are filtered by scope, and include the clean-up ones', () => {
   assert.ok(presetsForScope('cv').some(p => p.id === 'tailor'))
   assert.ok(presetsForScope('cv').some(p => p.id === 'cleanup'))

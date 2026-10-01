@@ -148,7 +148,7 @@ export default function AssistantModal({ open, requestId, initialScope = 'cv', c
       })
 
       const answer = [turn.summary, turn.reply].filter(Boolean).join('\n\n')
-      if (first && turn.sections.length === 0 && !turn.reply) {
+      if (first && turn.sections.length === 0 && !turn.reply && !turn.summary) {
         setError(['The AI had no changes to suggest for that request. Try rephrasing, or add more detail.', ...turn.notes].join(' '))
         return
       }

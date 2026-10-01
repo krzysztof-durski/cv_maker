@@ -174,9 +174,17 @@ export function buildRequest({ cvData, originalCv = cvData, scope, instruction, 
 /* ---------- presets ---------- */
 
 const BULLET_SECTIONS = ['experience', 'projects', 'volunteer', 'education', 'custom']
+const EVERYWHERE = ['cv', 'profile', ...BULLET_SECTIONS, 'skills', 'certifications']
 
 // scopes: 'cv' (whole CV) and/or section ids the preset makes sense for.
 export const PRESETS = [
+  {
+    id: 'suggest',
+    label: 'Any suggestions?',
+    scopes: EVERYWHERE,
+    instruction:
+      'Review this and tell me what you would improve, as a short prioritised list in your reply: weak or vague wording, missing details, structure problems or duplicates, and anything that could be more relevant to the job in the reference material (if there is one). Explain each suggestion in a sentence. If a detail is missing, ask me for it rather than guessing. Do not change anything yet; I will tell you which suggestions to apply.',
+  },
   {
     id: 'tailor',
     label: 'Tailor to this job',

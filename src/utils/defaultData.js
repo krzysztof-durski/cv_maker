@@ -1,4 +1,5 @@
 export const SECTION_LABELS = {
+  profile: 'Profile',
   education: 'Education',
   experience: 'Experience',
   projects: 'Projects',
@@ -19,12 +20,14 @@ export const LINK_TYPES = {
 export const DEFAULT_DATA = {
   personal: {
     name: '',
+    jobTitle: '',
     phone: '',
     email: '',
     location: '',
     links: [],
   },
   sectionOrder: [
+    { id: 'profile', enabled: true },
     { id: 'education', enabled: true },
     { id: 'experience', enabled: true },
     { id: 'projects', enabled: true },
@@ -34,6 +37,9 @@ export const DEFAULT_DATA = {
     { id: 'volunteer', enabled: false },
     { id: 'custom', enabled: false },
   ],
+  profile: {
+    text: '',
+  },
   education: [
     { id: 'edu-1', school: '', degree: '', field: '', location: '', startDate: '', endDate: '', bullets: [] },
   ],
@@ -73,6 +79,7 @@ function migratePersonal(p = {}) {
   if (p.github)   links.push({ id: 'link-gh', type: 'github',   url: p.github })
   return {
     name:     p.name     || '',
+    jobTitle: p.jobTitle || '',
     phone:    p.phone    || '',
     email:    p.email    || '',
     location: p.location || '',
@@ -80,12 +87,21 @@ function migratePersonal(p = {}) {
   }
 }
 
+function migrateSectionOrder(stored) {
+  const order = stored || DEFAULT_DATA.sectionOrder
+  const known = new Set(order.map(s => s.id))
+  // append any section types introduced after this CV was first saved (e.g. "profile")
+  const missing = DEFAULT_DATA.sectionOrder.filter(s => !known.has(s.id))
+  return [...order, ...missing]
+}
+
 export function mergeWithDefaults(stored) {
   return {
     ...DEFAULT_DATA,
     ...stored,
     personal: migratePersonal(stored.personal),
-    sectionOrder: stored.sectionOrder || DEFAULT_DATA.sectionOrder,
+    profile: { ...DEFAULT_DATA.profile, ...(stored.profile || {}) },
+    sectionOrder: migrateSectionOrder(stored.sectionOrder),
     custom: {
       ...DEFAULT_DATA.custom,
       ...(stored.custom || {}),

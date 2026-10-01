@@ -1,5 +1,6 @@
 import { useRef, useState, useEffect, useCallback } from 'react'
 import PreviewHeader from './sections/PreviewHeader'
+import PreviewProfile from './sections/PreviewProfile'
 import PreviewEducation from './sections/PreviewEducation'
 import PreviewExperience from './sections/PreviewExperience'
 import PreviewProjects from './sections/PreviewProjects'
@@ -17,7 +18,8 @@ const ZOOM_STEP = 0.1
 
 function PreviewSection({ sectionId, cvData }) {
   switch (sectionId) {
-    case 'education':      return <PreviewEducation      entries={cvData.education} />
+    case 'profile':         return <PreviewProfile         profile={cvData.profile} />
+    case 'education':      return <PreviewEducation       entries={cvData.education} />
     case 'experience':     return <PreviewExperience     entries={cvData.experience} />
     case 'projects':       return <PreviewProjects       entries={cvData.projects} />
     case 'skills':         return <PreviewSkills         entries={cvData.skills} />

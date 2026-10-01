@@ -1,4 +1,14 @@
 export const SECTION_HELP = {
+  profile: {
+    intro: 'A short bio at the top of your CV — 2–4 sentences summarizing who you are and what you bring.',
+    tips: [
+      'Lead with your role or field, then your strongest 1–2 achievements or areas of expertise.',
+      'Write in the third person without a pronoun, or first person without "I" — e.g. "Backend engineer with 5 years building payment systems."',
+      'Keep it to 3–5 sentences. This is a hook, not a cover letter.',
+      'Tailor it to the role you are applying for — mention the domain or stack if relevant.',
+      'Skip generic filler like "hard-working team player" — let the Experience section prove that instead.',
+    ],
+  },
   personal: {
     intro: 'Your contact header — the first thing a recruiter sees. Keep it clean and accurate.',
     tips: [

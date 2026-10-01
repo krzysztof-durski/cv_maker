@@ -1,6 +1,7 @@
 import HowToUse from './HowToUse'
 import SectionManager from './SectionManager'
 import PersonalInfoEditor from './sections/PersonalInfoEditor'
+import ProfileEditor from './sections/ProfileEditor'
 import EducationEditor from './sections/EducationEditor'
 import ExperienceEditor from './sections/ExperienceEditor'
 import ProjectsEditor from './sections/ProjectsEditor'
@@ -16,6 +17,7 @@ export default function EditorPanel({ cvData, setCvData }) {
   const reset = (field) => () => setCvData(prev => ({ ...prev, [field]: DEFAULT_DATA[field] }))
 
   const sectionEditors = {
+    profile:        <ProfileEditor        profile={cvData.profile}        onChange={update('profile')}        onReset={reset('profile')} />,
     education:      <EducationEditor      entries={cvData.education}      onChange={update('education')}      onReset={reset('education')} />,
     experience:     <ExperienceEditor     entries={cvData.experience}     onChange={update('experience')}     onReset={reset('experience')} />,
     projects:       <ProjectsEditor       entries={cvData.projects}       onChange={update('projects')}       onReset={reset('projects')} />,

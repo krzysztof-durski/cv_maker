@@ -10,6 +10,7 @@ export default function EditorPage() {
   const [cvData, setCvData] = useLocalStorage('cv_maker_data', DEFAULT_DATA)
   const [isDark, toggleDark] = useDarkMode()
   const [mobileView, setMobileView] = useState('edit') // 'edit' | 'preview' — only used below lg
+  const [exportingDocx, setExportingDocx] = useState(false)
 
   const handleReset = () => {
     if (window.confirm(
@@ -53,6 +54,26 @@ export default function EditorPage() {
     reader.readAsText(file)
   }
 
+  const handleExportDocx = async () => {
+    if (exportingDocx) return
+    setExportingDocx(true)
+    try {
+      const { cvDataToDocxBlob, docxFileName } = await import('../utils/exportDocx')
+      const blob = await cvDataToDocxBlob(cvData)
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = docxFileName(cvData.personal)
+      a.click()
+      URL.revokeObjectURL(url)
+    } catch (err) {
+      console.error(err)
+      alert('Could not generate the Word document. Please try again.')
+    } finally {
+      setExportingDocx(false)
+    }
+  }
+
   return (
     <div id="app-shell" className="flex h-dvh flex-col overflow-hidden bg-gray-100 dark:bg-gray-950">
       <Header
@@ -60,6 +81,8 @@ export default function EditorPage() {
         onPrint={handlePrint}
         onDownload={handleDownload}
         onUpload={handleUpload}
+        onExportDocx={handleExportDocx}
+        exportingDocx={exportingDocx}
         isDark={isDark}
         onToggleDark={toggleDark}
         mobileView={mobileView}

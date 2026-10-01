@@ -82,6 +82,9 @@ export default function PersonalInfoEditor({ personal, onChange, onReset }) {
         <div className="col-span-2">
           <Field label="Full Name" value={personal.name} onChange={v => update('name', v)} placeholder="Jane Smith" />
         </div>
+        <div className="col-span-2">
+          <Field label="Job Title" value={personal.jobTitle} onChange={v => update('jobTitle', v)} placeholder="Senior Software Engineer" />
+        </div>
         <Field label="Phone" value={personal.phone} onChange={v => update('phone', v)} placeholder="+48 000 000 000" />
         <Field label="Email" value={personal.email} onChange={v => update('email', v)} placeholder="you@email.com" type="email" />
         <div className="col-span-2">

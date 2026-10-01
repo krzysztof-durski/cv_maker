@@ -22,7 +22,7 @@ function LinkItem({ type, url, label }) {
 }
 
 export default function PreviewHeader({ personal }) {
-  const { name, phone, email, location, links = [] } = personal
+  const { name, jobTitle, phone, email, location, links = [] } = personal
 
   const parts = [
     phone    ? { kind: 'text',  value: phone }    : null,
@@ -34,8 +34,13 @@ export default function PreviewHeader({ personal }) {
   return (
     <div style={{ textAlign: 'center', marginBottom: '8px' }}>
       {name && (
-        <div style={{ fontSize: '24pt', fontWeight: 'bold', lineHeight: '1.2', marginBottom: '4px' }}>
+        <div style={{ fontSize: '24pt', fontWeight: 'bold', lineHeight: '1.2', marginBottom: jobTitle ? '2px' : '4px' }}>
           {name}
+        </div>
+      )}
+      {jobTitle && (
+        <div style={{ fontSize: '13pt', color: '#333', lineHeight: '1.2', marginBottom: '4px' }}>
+          {jobTitle}
         </div>
       )}
       {parts.length > 0 && (

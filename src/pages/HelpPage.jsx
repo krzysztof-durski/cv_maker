@@ -39,6 +39,16 @@ export default function HelpPage() {
       </section>
 
       <section>
+        <h2>Exporting as Word (.docx)</h2>
+        <p>
+          Prefer to edit in Microsoft Word or Google Docs? Open the ⋯ menu and choose{' '}
+          <strong>Export as Word (.docx)</strong>. It builds a Harvard-style <code>.docx</code> file with the same
+          layout, fonts, and sections as the preview — open it directly in Word, or upload it to Google Drive and
+          open with Google Docs. Generated entirely in your browser, just like the PDF.
+        </p>
+      </section>
+
+      <section>
         <h2>Section tips</h2>
         <p>
           Each section in the editor has a small <strong>?</strong> button in its header. Click it to see section-specific

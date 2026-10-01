@@ -15,9 +15,10 @@ const MenuIcon = (p) => <Icon {...p} path={<><circle cx="12" cy="5" r="1.4" /><c
 const SaveIcon = (p) => <Icon {...p} path={<><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z" /><path d="M17 21v-8H7v8M7 3v5h8" /></>} />
 const UploadIcon = (p) => <Icon {...p} path={<><path d="M12 21V9" /><path d="m7 14 5-5 5 5" /><path d="M5 3h14" /></>} />
 const TrashIcon = (p) => <Icon {...p} path={<><path d="M3 6h18" /><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" /><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" /></>} />
+const FileTextIcon = (p) => <Icon {...p} path={<><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z" /><path d="M14 2v6h6" /><path d="M9 13h6M9 17h6" /></>} />
 
 /* ---------- overflow menu ---------- */
-function OverflowMenu({ onDownload, onUpload, onReset }) {
+function OverflowMenu({ onDownload, onUpload, onReset, onExportDocx, exportingDocx }) {
   const [open, setOpen] = useState(false)
   const wrapRef = useRef(null)
   const fileInputRef = useRef(null)
@@ -57,6 +58,9 @@ function OverflowMenu({ onDownload, onUpload, onReset }) {
           <button role="menuitem" className={item} onClick={close(() => fileInputRef.current?.click())}>
             <UploadIcon className="h-4 w-4 text-gray-400" /> Restore backup
           </button>
+          <button role="menuitem" className={`${item} disabled:cursor-wait disabled:opacity-60`} disabled={exportingDocx} onClick={close(onExportDocx)}>
+            <FileTextIcon className="h-4 w-4 text-gray-400" /> {exportingDocx ? 'Exporting…' : 'Export as Word (.docx)'}
+          </button>
 
           <div className="my-1 border-t border-gray-100 dark:border-gray-800" />
 
@@ -89,7 +93,7 @@ function OverflowMenu({ onDownload, onUpload, onReset }) {
 }
 
 /* ---------- header ---------- */
-export default function Header({ onReset, onPrint, onDownload, onUpload, isDark, onToggleDark, mobileView, onMobileViewChange }) {
+export default function Header({ onReset, onPrint, onDownload, onUpload, onExportDocx, exportingDocx, isDark, onToggleDark, mobileView, onMobileViewChange }) {
   const seg = (active) =>
     `px-3 py-1 text-xs font-semibold rounded-md transition-colors ${
       active
@@ -138,7 +142,13 @@ export default function Header({ onReset, onPrint, onDownload, onUpload, isDark,
           {isDark ? <SunIcon /> : <MoonIcon />}
         </button>
 
-        <OverflowMenu onDownload={onDownload} onUpload={onUpload} onReset={onReset} />
+        <OverflowMenu
+          onDownload={onDownload}
+          onUpload={onUpload}
+          onReset={onReset}
+          onExportDocx={onExportDocx}
+          exportingDocx={exportingDocx}
+        />
       </div>
     </header>
   )

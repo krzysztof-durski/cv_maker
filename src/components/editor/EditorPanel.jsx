@@ -1,3 +1,4 @@
+import AiCard from '../ai/AiCard'
 import HowToUse from './HowToUse'
 import SectionManager from './SectionManager'
 import PersonalInfoEditor from './sections/PersonalInfoEditor'
@@ -37,6 +38,7 @@ export default function EditorPanel({ cvData, setCvData }) {
         <span className="text-xs text-gray-400 dark:text-gray-500">Auto-saved locally</span>
       </div>
 
+      <AiCard />
       <HowToUse />
       <PersonalInfoEditor
         personal={cvData.personal}

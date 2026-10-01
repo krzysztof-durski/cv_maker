@@ -11,9 +11,9 @@ export default function ExperienceEditor({ entries, onChange, onReset }) {
   const move = (id, dir) => onChange(moveItem(entries, entries.findIndex(e => e.id === id), dir))
 
   return (
-    <SectionShell title="Experience" onAdd={add} addLabel="+ Add experience" onReset={onReset} help={SECTION_HELP.experience}>
+    <SectionShell title="Experience" aiSection="experience" onAdd={add} addLabel="+ Add experience" onReset={onReset} help={SECTION_HELP.experience}>
       {entries.map((e, i) => (
-        <EntryCard key={e.id} onRemove={() => remove(e.id)} canRemove={entries.length > 1}
+        <EntryCard key={e.id} aiSection="experience" aiEntryId={e.id} onRemove={() => remove(e.id)} canRemove={entries.length > 1}
           onMoveUp={() => move(e.id, -1)} onMoveDown={() => move(e.id, 1)}
           isFirst={i === 0} isLast={i === entries.length - 1}>
           <Field label="Job Title" value={e.title} onChange={v => update(e.id, 'title', v)} placeholder="Founder & CEO / Full Stack Engineer" className="col-span-2" />

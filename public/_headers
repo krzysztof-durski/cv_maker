@@ -1,0 +1,13 @@
+# Cloudflare Pages response headers.
+#
+# The Content-Security-Policy limits where the page can send data. That matters because users can
+# store their own AI API key in this browser: connect-src only allows this site, the three AI
+# providers the assistant supports, and Cloudflare Web Analytics.
+#
+# The sha256 in script-src is the hash of the inline dark-mode script in index.html. If you edit
+# that script, regenerate it:
+#   node -e "const h=require('fs').readFileSync('dist/index.html','utf8').match(/<script>([\s\S]*?)<\/script>/)[1];console.log('sha256-'+require('crypto').createHash('sha256').update(h).digest('base64'))"
+#
+# Add a provider's API origin to connect-src if you add another AI provider.
+/*
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'sha256-ShUD81LDK7+iNMwl0HnT3XeCY2qQZbU6GxEFtyUb3es=' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://api.openai.com https://api.anthropic.com https://generativelanguage.googleapis.com https://cloudflareinsights.com; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'

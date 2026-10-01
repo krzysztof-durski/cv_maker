@@ -5,18 +5,22 @@ import { DEFAULT_DATA, mergeWithDefaults } from '../utils/defaultData'
 import Header from '../components/Header'
 import EditorPanel from '../components/editor/EditorPanel'
 import CVPreview from '../components/preview/CVPreview'
+import { AiProvider } from '../components/ai/AiProvider'
+import { useAiSettings } from '../components/ai/useAiSettings'
 
 export default function EditorPage() {
   const [cvData, setCvData] = useLocalStorage('cv_maker_data', DEFAULT_DATA)
+  const aiSettings = useAiSettings()
   const [isDark, toggleDark] = useDarkMode()
   const [mobileView, setMobileView] = useState('edit') // 'edit' | 'preview' — only used below lg
   const [exportingDocx, setExportingDocx] = useState(false)
 
   const handleReset = () => {
     if (window.confirm(
-      'This will permanently delete all your CV data and cannot be undone. Are you sure?'
+      'This will permanently delete all your CV data and any saved AI API key, and cannot be undone. Are you sure?'
     )) {
       window.localStorage.removeItem('cv_maker_data')
+      aiSettings.clearAll()
       setCvData(DEFAULT_DATA)
     }
   }
@@ -75,36 +79,38 @@ export default function EditorPage() {
   }
 
   return (
-    <div id="app-shell" className="flex h-dvh flex-col overflow-hidden bg-gray-100 dark:bg-gray-950">
-      <Header
-        onReset={handleReset}
-        onPrint={handlePrint}
-        onDownload={handleDownload}
-        onUpload={handleUpload}
-        onExportDocx={handleExportDocx}
-        exportingDocx={exportingDocx}
-        isDark={isDark}
-        onToggleDark={toggleDark}
-        mobileView={mobileView}
-        onMobileViewChange={setMobileView}
-      />
+    <AiProvider cvData={cvData} setCvData={setCvData} settings={aiSettings}>
+      <div id="app-shell" className="flex h-dvh flex-col overflow-hidden bg-gray-100 dark:bg-gray-950">
+        <Header
+          onReset={handleReset}
+          onPrint={handlePrint}
+          onDownload={handleDownload}
+          onUpload={handleUpload}
+          onExportDocx={handleExportDocx}
+          exportingDocx={exportingDocx}
+          isDark={isDark}
+          onToggleDark={toggleDark}
+          mobileView={mobileView}
+          onMobileViewChange={setMobileView}
+        />
 
-      <main id="app-main" className="flex flex-1 overflow-hidden">
-        {/* Editor */}
-        <div
-          className={`${mobileView === 'edit' ? 'flex' : 'hidden'} thin-scroll no-print w-full shrink-0 flex-col overflow-y-auto border-r border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-900 lg:flex lg:w-[440px] xl:w-[480px]`}
-        >
-          <EditorPanel cvData={cvData} setCvData={setCvData} />
-        </div>
+        <main id="app-main" className="flex flex-1 overflow-hidden">
+          {/* Editor */}
+          <div
+            className={`${mobileView === 'edit' ? 'flex' : 'hidden'} thin-scroll no-print w-full shrink-0 flex-col overflow-y-auto border-r border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-900 lg:flex lg:w-[440px] xl:w-[480px]`}
+          >
+            <EditorPanel cvData={cvData} setCvData={setCvData} />
+          </div>
 
-        {/* Live preview */}
-        <div
-          id="cv-preview-pane"
-          className={`${mobileView === 'preview' ? 'flex' : 'hidden'} relative min-w-0 flex-1 lg:flex`}
-        >
-          <CVPreview cvData={cvData} />
-        </div>
-      </main>
-    </div>
+          {/* Live preview */}
+          <div
+            id="cv-preview-pane"
+            className={`${mobileView === 'preview' ? 'flex' : 'hidden'} relative min-w-0 flex-1 lg:flex`}
+          >
+            <CVPreview cvData={cvData} />
+          </div>
+        </main>
+      </div>
+    </AiProvider>
   )
 }

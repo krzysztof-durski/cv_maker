@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import AiButton from '../../ai/AiButton'
 
 export function moveItem(arr, index, direction) {
   const next = index + direction
@@ -112,10 +113,11 @@ export function BulletList({ bullets, onAdd, onUpdate, onRemove }) {
   )
 }
 
-export function EntryCard({ children, onRemove, canRemove, onMoveUp, onMoveDown, isFirst, isLast }) {
+export function EntryCard({ children, onRemove, canRemove, onMoveUp, onMoveDown, isFirst, isLast, aiSection, aiEntryId }) {
   return (
     <div className="relative mb-3 rounded-lg border border-gray-200 bg-gray-50 p-3 dark:border-gray-700 dark:bg-gray-900">
       <div className="absolute right-2 top-2 flex items-center gap-1">
+        {aiSection && <AiButton section={aiSection} entryId={aiEntryId} />}
         <button
           onClick={onMoveUp}
           disabled={isFirst}
@@ -149,7 +151,7 @@ export function EntryCard({ children, onRemove, canRemove, onMoveUp, onMoveDown,
   )
 }
 
-export function SectionShell({ title, children, onAdd, addLabel = '+ Add entry', onReset, help }) {
+export function SectionShell({ title, children, onAdd, addLabel = '+ Add entry', onReset, help, aiSection }) {
   const [showHelp, setShowHelp] = useState(false)
 
   const handleReset = () => {
@@ -175,6 +177,7 @@ export function SectionShell({ title, children, onAdd, addLabel = '+ Add entry',
               ?
             </button>
           )}
+          {aiSection && <AiButton section={aiSection} label={title} />}
         </div>
         {onReset && (
           <button

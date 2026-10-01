@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { SECTION_HELP } from '../../../utils/sectionHelp'
 import { inputClass } from './shared'
+import AiButton from '../../ai/AiButton'
 
 export default function ProfileEditor({ profile, onChange, onReset }) {
   const [showHelp, setShowHelp] = useState(false)
@@ -24,6 +25,7 @@ export default function ProfileEditor({ profile, onChange, onReset }) {
           >
             ?
           </button>
+          <AiButton section="profile" label="Profile" />
         </div>
         {onReset && (
           <button

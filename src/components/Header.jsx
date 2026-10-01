@@ -1,5 +1,7 @@
 import { useRef, useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import { useAi } from './ai/aiContext'
+import { SparkleIcon } from './ai/icons'
 
 /* ---------- icons ---------- */
 const Icon = ({ path, className = 'h-4 w-4' }) => (
@@ -18,7 +20,7 @@ const TrashIcon = (p) => <Icon {...p} path={<><path d="M3 6h18" /><path d="M8 6V
 const FileTextIcon = (p) => <Icon {...p} path={<><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z" /><path d="M14 2v6h6" /><path d="M9 13h6M9 17h6" /></>} />
 
 /* ---------- overflow menu ---------- */
-function OverflowMenu({ onDownload, onUpload, onReset, onExportDocx, exportingDocx }) {
+function OverflowMenu({ onDownload, onUpload, onReset, onExportDocx, exportingDocx, onAiSettings }) {
   const [open, setOpen] = useState(false)
   const wrapRef = useRef(null)
   const fileInputRef = useRef(null)
@@ -61,6 +63,11 @@ function OverflowMenu({ onDownload, onUpload, onReset, onExportDocx, exportingDo
           <button role="menuitem" className={`${item} disabled:cursor-wait disabled:opacity-60`} disabled={exportingDocx} onClick={close(onExportDocx)}>
             <FileTextIcon className="h-4 w-4 text-gray-400" /> {exportingDocx ? 'Exporting…' : 'Export as Word (.docx)'}
           </button>
+          {onAiSettings && (
+            <button role="menuitem" className={item} onClick={close(onAiSettings)}>
+              <SparkleIcon className="h-4 w-4 text-gray-400" /> AI settings &amp; API key
+            </button>
+          )}
 
           <div className="my-1 border-t border-gray-100 dark:border-gray-800" />
 
@@ -94,6 +101,7 @@ function OverflowMenu({ onDownload, onUpload, onReset, onExportDocx, exportingDo
 
 /* ---------- header ---------- */
 export default function Header({ onReset, onPrint, onDownload, onUpload, onExportDocx, exportingDocx, isDark, onToggleDark, mobileView, onMobileViewChange }) {
+  const ai = useAi()
   const seg = (active) =>
     `px-3 py-1 text-xs font-semibold rounded-md transition-colors ${
       active
@@ -125,6 +133,17 @@ export default function Header({ onReset, onPrint, onDownload, onUpload, onExpor
 
       {/* Actions */}
       <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
+        {ai && (
+          <button
+            onClick={() => ai.openAssistant('cv')}
+            className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-indigo-200 bg-indigo-50 px-2.5 text-xs font-semibold text-indigo-700 transition-colors hover:bg-indigo-100 dark:border-indigo-900 dark:bg-indigo-950/40 dark:text-indigo-300 dark:hover:bg-indigo-950 sm:px-3.5"
+            title="Tailor or edit your CV with AI"
+          >
+            <SparkleIcon className="h-4 w-4" />
+            <span className="hidden sm:inline">AI</span>
+          </button>
+        )}
+
         <button
           onClick={onPrint}
           className="inline-flex h-9 items-center gap-1.5 rounded-lg bg-indigo-600 px-2.5 text-xs font-semibold text-white transition-colors hover:bg-indigo-700 sm:px-3.5"
@@ -148,6 +167,7 @@ export default function Header({ onReset, onPrint, onDownload, onUpload, onExpor
           onReset={onReset}
           onExportDocx={onExportDocx}
           exportingDocx={exportingDocx}
+          onAiSettings={ai?.openSettings}
         />
       </div>
     </header>

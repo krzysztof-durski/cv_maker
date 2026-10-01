@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Field, DateFields, BulletList, EntryCard, newId, moveItem, inputClass, labelClass } from './shared'
 import { SECTION_HELP } from '../../../utils/sectionHelp'
+import AiButton from '../../ai/AiButton'
 
 export default function CustomSectionEditor({ custom, onChange, onReset }) {
   const [showHelp, setShowHelp] = useState(false)
@@ -59,6 +60,7 @@ export default function CustomSectionEditor({ custom, onChange, onReset }) {
           >
             ?
           </button>
+          <AiButton section="custom" label="Custom Section" />
         </div>
         {onReset && (
           <button
@@ -95,7 +97,7 @@ export default function CustomSectionEditor({ custom, onChange, onReset }) {
           />
         </div>
         {custom.entries.map((e, i) => (
-          <EntryCard key={e.id} onRemove={() => removeEntry(e.id)} canRemove={custom.entries.length > 1}
+          <EntryCard key={e.id} aiSection="custom" aiEntryId={e.id} onRemove={() => removeEntry(e.id)} canRemove={custom.entries.length > 1}
             onMoveUp={() => move(e.id, -1)} onMoveDown={() => move(e.id, 1)}
             isFirst={i === 0} isLast={i === custom.entries.length - 1}>
             <Field label="Title" value={e.title} onChange={v => update(e.id, 'title', v)} placeholder="Entry title" className="col-span-2" />

@@ -11,9 +11,9 @@ export default function ProjectsEditor({ entries, onChange, onReset }) {
   const move = (id, dir) => onChange(moveItem(entries, entries.findIndex(e => e.id === id), dir))
 
   return (
-    <SectionShell title="Projects" onAdd={add} addLabel="+ Add project" onReset={onReset} help={SECTION_HELP.projects}>
+    <SectionShell title="Projects" aiSection="projects" onAdd={add} addLabel="+ Add project" onReset={onReset} help={SECTION_HELP.projects}>
       {entries.map((e, i) => (
-        <EntryCard key={e.id} onRemove={() => remove(e.id)} canRemove={entries.length > 1}
+        <EntryCard key={e.id} aiSection="projects" aiEntryId={e.id} onRemove={() => remove(e.id)} canRemove={entries.length > 1}
           onMoveUp={() => move(e.id, -1)} onMoveDown={() => move(e.id, 1)}
           isFirst={i === 0} isLast={i === entries.length - 1}>
           <Field label="Project Name" value={e.name} onChange={v => update(e.id, 'name', v)} placeholder="My Project" />

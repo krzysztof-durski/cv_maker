@@ -11,9 +11,9 @@ export default function VolunteerEditor({ entries, onChange, onReset }) {
   const move = (id, dir) => onChange(moveItem(entries, entries.findIndex(e => e.id === id), dir))
 
   return (
-    <SectionShell title="Volunteer & Extracurriculars" onAdd={add} addLabel="+ Add entry" onReset={onReset} help={SECTION_HELP.volunteer}>
+    <SectionShell title="Volunteer & Extracurriculars" aiSection="volunteer" onAdd={add} addLabel="+ Add entry" onReset={onReset} help={SECTION_HELP.volunteer}>
       {entries.map((e, i) => (
-        <EntryCard key={e.id} onRemove={() => remove(e.id)} canRemove={entries.length > 1}
+        <EntryCard key={e.id} aiSection="volunteer" aiEntryId={e.id} onRemove={() => remove(e.id)} canRemove={entries.length > 1}
           onMoveUp={() => move(e.id, -1)} onMoveDown={() => move(e.id, 1)}
           isFirst={i === 0} isLast={i === entries.length - 1}>
           <Field label="Role / Position" value={e.role} onChange={v => update(e.id, 'role', v)} placeholder="Club President" className="col-span-2" />

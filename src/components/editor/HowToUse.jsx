@@ -29,6 +29,13 @@ export default function HowToUse() {
             <li>Open the <span className="font-medium">⋯ menu</span> and click <span className="font-medium">Save backup</span> to download a <code className="rounded bg-gray-100 px-1 dark:bg-gray-700">.json</code> file you can store safely or use on another device.</li>
             <li>Click <span className="font-medium">Restore backup</span> to reload a previously saved file.</li>
           </ul>
+          <p className="pt-1 font-semibold text-gray-700 dark:text-gray-200">Using AI (optional)</p>
+          <ul className="list-disc space-y-1 pl-4">
+            <li>Click <span className="font-medium">AI</span> in the header, the <span className="font-medium">AI</span> button on a section, or the small ✨ on a single job or project, and add your own OpenAI, Claude or Gemini API key.</li>
+            <li>Pick a quick prompt or write your own, and optionally paste or attach a job description.</li>
+            <li>Review the suggested changes, choose what to apply, keep chatting to refine them, and use <span className="font-medium">Undo</span> if you change your mind.</li>
+            <li>The AI can remove duplicates and move entries between sections, and your job title becomes the exact title of the job you tailor for. It never changes contact details, or the employers, schools and dates of existing entries. Always check its wording before you send your CV.</li>
+          </ul>
           <p className="pt-1 font-semibold text-gray-700 dark:text-gray-200">Exporting as PDF</p>
           <ul className="list-disc space-y-1 pl-4">
             <li>Click <span className="font-medium">Save PDF</span> in the header.</li>

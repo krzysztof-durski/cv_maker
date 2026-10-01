@@ -11,9 +11,9 @@ export default function EducationEditor({ entries, onChange, onReset }) {
   const move = (id, dir) => onChange(moveItem(entries, entries.findIndex(e => e.id === id), dir))
 
   return (
-    <SectionShell title="Education" onAdd={add} addLabel="+ Add education" onReset={onReset} help={SECTION_HELP.education}>
+    <SectionShell title="Education" aiSection="education" onAdd={add} addLabel="+ Add education" onReset={onReset} help={SECTION_HELP.education}>
       {entries.map((e, i) => (
-        <EntryCard key={e.id} onRemove={() => remove(e.id)} canRemove={entries.length > 1}
+        <EntryCard key={e.id} aiSection="education" aiEntryId={e.id} onRemove={() => remove(e.id)} canRemove={entries.length > 1}
           onMoveUp={() => move(e.id, -1)} onMoveDown={() => move(e.id, 1)}
           isFirst={i === 0} isLast={i === entries.length - 1}>
           <Field label="School / University" value={e.school} onChange={v => update(e.id, 'school', v)} placeholder="University of Example" className="col-span-2" />

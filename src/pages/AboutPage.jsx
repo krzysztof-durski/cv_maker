@@ -44,7 +44,8 @@ export default function AboutPage() {
         <h2>What makes it different</h2>
         <ul>
           <li><strong>Truly free.</strong> Export to PDF as many times as you want. No paywall, ever.</li>
-          <li><strong>Your data stays yours.</strong> Everything is stored in your browser's localStorage. Nothing is sent to any server.</li>
+          <li><strong>Your data stays yours.</strong> Everything is stored in your browser's localStorage. Nothing is sent to any server of ours.</li>
+          <li><strong>Bring your own AI.</strong> Optionally tailor and edit your CV with your own OpenAI, Claude, or Gemini key. It talks directly from your browser to the provider you choose, and you review every change before it's applied.</li>
           <li><strong>No account required.</strong> Open the page and start typing.</li>
           <li><strong>Harvard style.</strong> Clean, professional, widely accepted format used by top universities and employers.</li>
           <li><strong>Backup and restore.</strong> Download your CV data as a JSON file and restore it on any device or browser.</li>

@@ -57,6 +57,29 @@ export default function HelpPage() {
       </section>
 
       <section>
+        <h2>Using AI to tailor and edit your CV (optional)</h2>
+        <p>
+          You can use your own OpenAI (ChatGPT), Anthropic (Claude), or Google (Gemini) account to rewrite parts of your
+          CV or tailor it to a specific job. It is entirely optional and does nothing until you add a key.
+        </p>
+        <ol className="mt-3">
+          <li>Click <strong>AI</strong> in the header, the <strong>AI</strong> button on a section, or the small <strong>✨</strong> button on a single job, project or other entry, and choose <strong>Add API key</strong>.</li>
+          <li>Pick a provider, paste your key from that provider's dashboard, and press <strong>Test key &amp; load models</strong>. Choose a model.</li>
+          <li>Choose what the AI should work on (the whole CV, one section, or one job or project), then pick a <strong>quick prompt</strong> such as "Tailor to this job", or write your own instruction. You can paste a job description or attach one as a PDF, Word, text, or HTML file.</li>
+          <li>Press <strong>Get suggestions</strong>, then tick the changes you want. Nothing changes until you press <strong>Apply</strong>, and an <strong>Undo</strong> button appears afterwards.</li>
+        </ol>
+        <ul className="mt-3">
+          <li>Your key stays in your browser and is sent only to the provider you picked. By default it is forgotten when you close the tab; tick <strong>Remember my key on this device</strong> to keep it (not on shared computers).</li>
+          <li>The provider charges usage to your own account. A full-CV request is usually small, but check your provider's pricing.</li>
+          <li>The AI can rewrite and reorder text, <strong>remove duplicate entries</strong>, and <strong>move an entry to the right section</strong>. It cannot change your contact details, or the employer, school, dates or links of an existing entry. Anything new it adds is flagged for you to check.</li>
+          <li>When you tailor to a job, your <strong>job title becomes the role's exact title</strong> from the job description (or from what you wrote). The AI can't invent a different one.</li>
+          <li>Each change has its own checkbox, so you can accept a rewrite but decline a removal. A move between sections is accepted or declined as a whole.</li>
+          <li>After the first answer you can <strong>keep chatting</strong>: ask why something changed, or tell it what to adjust (for example "shorten the Initech bullets"). Your suggestions stay on screen, you can close the window and come back, and a failed message never loses them. Changes you untick are dropped when you send your next message.</li>
+          <li>Numbers or employers that the AI introduces and that aren't in your CV or what you provided are flagged with a warning. Always check the wording is true before you apply it.</li>
+        </ul>
+      </section>
+
+      <section>
         <h2>Other features</h2>
         <ul>
           <li><strong>↺ Reset</strong> on any section header clears that section only, with a confirmation prompt.</li>

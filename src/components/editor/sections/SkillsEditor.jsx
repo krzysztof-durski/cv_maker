@@ -8,7 +8,7 @@ export default function SkillsEditor({ entries, onChange, onReset }) {
   const move = (id, dir) => onChange(moveItem(entries, entries.findIndex(e => e.id === id), dir))
 
   return (
-    <SectionShell title="Skills" onAdd={add} addLabel="+ Add skill category" onReset={onReset} help={SECTION_HELP.skills}>
+    <SectionShell title="Skills" aiSection="skills" onAdd={add} addLabel="+ Add skill category" onReset={onReset} help={SECTION_HELP.skills}>
       {entries.map((e, i) => (
         <EntryCard key={e.id} onRemove={() => remove(e.id)} canRemove={entries.length > 1}
           onMoveUp={() => move(e.id, -1)} onMoveDown={() => move(e.id, 1)}

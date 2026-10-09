@@ -67,9 +67,3 @@ export function EntryBlock({ heading, lead, bullets = [] }) {
     </div>
   )
 }
-
-export function dateRange(start, end) {
-  if (!start && !end) return ''
-  if (!end) return start
-  return `${start} – ${end}`
-}

@@ -1,12 +1,14 @@
+import { useCvText } from '../CvLanguage'
 import { SectionHeader, KeepTogether } from './previewShared'
 
 export default function PreviewLanguages({ entries }) {
+  const text = useCvText()
   const visible = entries.filter(e => e.language)
   if (!visible.length) return null
 
   return (
     <KeepTogether>
-      <SectionHeader title="Languages" />
+      <SectionHeader title={text.heading('languages')} />
       <div style={{ marginTop: '3px' }}>
         {visible.map((e, i) => (
           <span key={e.id} style={{ fontSize: '11pt' }}>

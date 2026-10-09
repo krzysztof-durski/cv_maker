@@ -1,6 +1,8 @@
+import { useCvText } from '../CvLanguage'
 import { SectionHeader, EntryHeader, Italic, EntryBlock } from './previewShared'
 
 export default function PreviewCertifications({ entries }) {
+  const text = useCvText()
   const visible = entries.filter(e => e.name)
   if (!visible.length) return null
 
@@ -9,7 +11,7 @@ export default function PreviewCertifications({ entries }) {
       {visible.map((e, i) => (
         <EntryBlock
           key={e.id}
-          heading={i === 0 ? <SectionHeader title="Certifications & Awards" /> : null}
+          heading={i === 0 ? <SectionHeader title={text.heading('certifications')} /> : null}
           lead={(
             <>
               <EntryHeader left={e.name} right={e.date} />

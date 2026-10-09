@@ -9,6 +9,9 @@ import PreviewLanguages from './sections/PreviewLanguages'
 import PreviewCertifications from './sections/PreviewCertifications'
 import PreviewVolunteer from './sections/PreviewVolunteer'
 import PreviewCustom from './sections/PreviewCustom'
+import { CvLanguageProvider } from './CvLanguage'
+import { useI18n } from '../../i18n/I18nProvider'
+import { resolveCvLanguage } from '../../i18n/cvLanguage'
 
 const A4_W = 794
 const A4_H = 1123
@@ -32,6 +35,8 @@ function PreviewSection({ sectionId, cvData }) {
 }
 
 export default function CVPreview({ cvData }) {
+  const { t, lang } = useI18n()
+  const cvLanguage = resolveCvLanguage(cvData.language, lang)
   const scrollRef = useRef(null)
   const pageRef = useRef(null)
   const [fit, setFit] = useState(1)          // scale that fits the page width into the pane
@@ -85,6 +90,7 @@ export default function CVPreview({ cvData }) {
             >
               <div
                 id="cv-page"
+                lang={cvLanguage}
                 ref={pageRef}
                 style={{
                   width: A4_W,
@@ -104,13 +110,15 @@ export default function CVPreview({ cvData }) {
                   wordBreak: 'break-word',
                 }}
               >
-                <PreviewHeader personal={cvData.personal} />
-                {cvData.sectionOrder
-                  .filter(s => s.enabled)
-                  .map(s => (
-                    <PreviewSection key={s.id} sectionId={s.id} cvData={cvData} />
-                  ))
-                }
+                <CvLanguageProvider value={cvLanguage}>
+                  <PreviewHeader personal={cvData.personal} template={cvData.template} />
+                  {cvData.sectionOrder
+                    .filter(s => s.enabled)
+                    .map(s => (
+                      <PreviewSection key={s.id} sectionId={s.id} cvData={cvData} />
+                    ))
+                  }
+                </CvLanguageProvider>
               </div>
             </div>
           </div>
@@ -119,15 +127,15 @@ export default function CVPreview({ cvData }) {
 
       {/* Zoom controls */}
       <div className="no-print absolute bottom-4 right-4 flex items-center gap-0.5 rounded-lg border border-gray-200 bg-white/95 p-1 shadow-lg backdrop-blur dark:border-gray-700 dark:bg-gray-900/95">
-        <button className={btn} onClick={() => zoomBy(-ZOOM_STEP)} disabled={zoom <= ZOOM_MIN} title="Zoom out" aria-label="Zoom out">−</button>
+        <button className={btn} onClick={() => zoomBy(-ZOOM_STEP)} disabled={zoom <= ZOOM_MIN} title={t('zoom.out')} aria-label={t('zoom.out')}>−</button>
         <button
           className="min-w-[3rem] rounded-md px-1 py-1 text-center text-xs font-semibold text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
           onClick={() => setZoom(1)}
-          title="Reset zoom"
+          title={t('zoom.reset')}
         >
           {Math.round(scale * 100)}%
         </button>
-        <button className={btn} onClick={() => zoomBy(ZOOM_STEP)} disabled={zoom >= ZOOM_MAX} title="Zoom in" aria-label="Zoom in">+</button>
+        <button className={btn} onClick={() => zoomBy(ZOOM_STEP)} disabled={zoom >= ZOOM_MAX} title={t('zoom.in')} aria-label={t('zoom.in')}>+</button>
       </div>
     </>
   )

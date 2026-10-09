@@ -1,6 +1,8 @@
+import { useCvText } from '../CvLanguage'
 import { SectionHeader, KeepTogether } from './previewShared'
 
 export default function PreviewSkills({ entries }) {
+  const text = useCvText()
   const visible = entries.filter(e => e.category || e.items)
   if (!visible.length) return null
 
@@ -14,7 +16,7 @@ export default function PreviewSkills({ entries }) {
           </div>
         )
         return i === 0
-          ? <KeepTogether key={e.id}><SectionHeader title="Technical Skills" />{line}</KeepTogether>
+          ? <KeepTogether key={e.id}><SectionHeader title={text.heading('skills')} />{line}</KeepTogether>
           : line
       })}
     </div>

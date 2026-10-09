@@ -1,6 +1,8 @@
-import { SectionHeader, EntryHeader, Italic, EntryBlock, dateRange } from './previewShared'
+import { useCvText } from '../CvLanguage'
+import { SectionHeader, EntryHeader, Italic, EntryBlock } from './previewShared'
 
 export default function PreviewProjects({ entries }) {
+  const text = useCvText()
   const visible = entries.filter(e => e.name || e.technologies)
   if (!visible.length) return null
 
@@ -9,12 +11,12 @@ export default function PreviewProjects({ entries }) {
       {visible.map((e, i) => (
         <EntryBlock
           key={e.id}
-          heading={i === 0 ? <SectionHeader title="Projects" /> : null}
+          heading={i === 0 ? <SectionHeader title={text.heading('projects')} /> : null}
           lead={(
             <>
               <EntryHeader
                 left={[e.name, e.technologies ? `| ${e.technologies}` : ''].filter(Boolean).join(' ')}
-                right={dateRange(e.startDate, e.endDate)}
+                right={text.dateRange(e.startDate, e.endDate)}
               />
               {e.description && <Italic>{e.description}</Italic>}
             </>

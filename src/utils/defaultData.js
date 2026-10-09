@@ -1,23 +1,18 @@
-export const SECTION_LABELS = {
-  profile: 'Profile',
-  education: 'Education',
-  experience: 'Experience',
-  projects: 'Projects',
-  skills: 'Skills',
-  languages: 'Languages',
-  certifications: 'Certifications & Awards',
-  volunteer: 'Volunteer & Extracurriculars',
-  custom: 'Custom Section',
-}
+import { DEFAULT_TEMPLATE, normalizeTemplate } from './templates.js'
+import { localizedMap } from '../i18n/core.js'
+import { DEFAULT_CV_LANGUAGE, normalizeCvLanguage } from '../i18n/cvLanguage.js'
 
-export const LINK_TYPES = {
-  linkedin:  'LinkedIn',
-  github:    'GitHub',
-  portfolio: 'Portfolio',
-  other:     'Other',
-}
+// Section and link-type names in the current language (read each time, so they follow a language switch).
+export const SECTION_LABELS = localizedMap(
+  ['profile', 'education', 'experience', 'projects', 'skills', 'languages', 'certifications', 'volunteer', 'custom'],
+  'sections',
+)
+
+export const LINK_TYPES = localizedMap(['linkedin', 'github', 'portfolio', 'other'], 'linkTypes')
 
 export const DEFAULT_DATA = {
+  template: DEFAULT_TEMPLATE,
+  language: DEFAULT_CV_LANGUAGE, // language of the headings printed on the CV: 'auto' (follow the app), 'en' or 'pl'
   personal: {
     name: '',
     jobTitle: '',
@@ -25,12 +20,13 @@ export const DEFAULT_DATA = {
     email: '',
     location: '',
     links: [],
+    photo: '', // a small JPEG data URL, shown by the 'photo' template and never sent to an AI provider
   },
   sectionOrder: [
     { id: 'profile', enabled: true },
-    { id: 'education', enabled: true },
     { id: 'experience', enabled: true },
     { id: 'projects', enabled: true },
+    { id: 'education', enabled: true },
     { id: 'skills', enabled: true },
     { id: 'languages', enabled: false },
     { id: 'certifications', enabled: false },
@@ -84,6 +80,7 @@ function migratePersonal(p = {}) {
     email:    p.email    || '',
     location: p.location || '',
     links,
+    photo:    '',
   }
 }
 
@@ -99,6 +96,8 @@ export function mergeWithDefaults(stored) {
   return {
     ...DEFAULT_DATA,
     ...stored,
+    template: normalizeTemplate(stored.template),
+    language: normalizeCvLanguage(stored.language),
     personal: migratePersonal(stored.personal),
     profile: { ...DEFAULT_DATA.profile, ...(stored.profile || {}) },
     sectionOrder: migrateSectionOrder(stored.sectionOrder),

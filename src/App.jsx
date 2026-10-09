@@ -1,16 +1,13 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import EditorPage from './pages/EditorPage'
-import TermsPage from './pages/TermsPage'
-import PrivacyPage from './pages/PrivacyPage'
-import AboutPage from './pages/AboutPage'
-import HelpPage from './pages/HelpPage'
+import InfoPage from './components/InfoPage'
 
 const router = createBrowserRouter([
   { path: '/', element: <EditorPage /> },
-  { path: '/help', element: <HelpPage /> },
-  { path: '/about', element: <AboutPage /> },
-  { path: '/terms', element: <TermsPage /> },
-  { path: '/privacy', element: <PrivacyPage /> },
+  { path: '/help', element: <InfoPage page="help" /> },
+  { path: '/about', element: <InfoPage page="about" /> },
+  { path: '/terms', element: <InfoPage page="terms" /> },
+  { path: '/privacy', element: <InfoPage page="privacy" /> },
 ])
 
 export default function App() {

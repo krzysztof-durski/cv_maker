@@ -292,7 +292,7 @@ export default {
       },
       translate: {
         label: 'Przetłumacz ({language})',
-        instruction: 'Przetłumacz tekst tego CV na język {language}: profil, punkty, opisy, kategorie umiejętności i listy umiejętności. Nazwy osób, firm, szkół, produktów i technologii zostaw bez zmian i zachowaj dokładnie wszystkie liczby oraz daty. Niczego nie dodawaj ani nie usuwaj.',
+        instruction: 'Przetłumacz tekst tego CV na język {language}: profil, punkty, opisy, kategorie umiejętności i listy umiejętności. Nazwy osób, firm, szkół, produktów i technologii zostaw bez zmian i zachowaj dokładnie wszystkie liczby oraz daty. Moją własną pracę opisuj w pierwszej osobie liczby pojedynczej. Niczego nie dodawaj ani nie usuwaj.',
       },
     },
 

@@ -146,6 +146,15 @@ describe('a conversation in Polish', () => {
     expect(screen.queryByTestId('busy-advice')).toBeNull()
   })
 
+  it('sends the chosen gender forms to the model', async () => {
+    const requests = stubGemini(reply({ summary: 'Gotowe.', changes: {} }))
+    show({ data: cvData({ gender: 'feminine' }) })
+    fireEvent.change(screen.getByLabelText('Polecenie'), { target: { value: 'Przetłumacz' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Pokaż propozycje' }))
+    await waitFor(() => expect(requests).toHaveLength(1))
+    expect(requests[0].systemInstruction.parts[0].text).toMatch(/The person is a woman: use feminine forms/)
+  })
+
   it('labels the suggestions in Polish', async () => {
     stubGemini(reply({ summary: 'Zmieniono opis.', changes: { profile: { text: 'I build reliable things.' } } }))
     show()

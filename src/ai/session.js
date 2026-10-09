@@ -19,14 +19,15 @@ export function groundingFrom(reference, messages) {
  * @param workingCv   what the model should work on: originalCv, or originalCv plus the accepted suggestions
  * @param messages    the conversation so far: [{ role: 'user' | 'assistant' | 'error', text }]
  * @param language    the language the user reads the app in, for the model's summary and reply
+ * @param gender      the forms the person's Polish text uses: 'auto', 'masculine' or 'feminine'
  * @returns {Promise<{ summary, reply, notes, grounding, draftCv, sections, sectionIds }>}
  *   draftCv is workingCv with the new answer applied; sections compares it with originalCv
  */
 export async function runTurn({
-  complete, originalCv, workingCv, scope, instruction, reference = '', messages = [], others = '', newId, signal, onRetry, language = 'en',
+  complete, originalCv, workingCv, scope, instruction, reference = '', messages = [], others = '', newId, signal, onRetry, language = 'en', gender = 'auto',
 }) {
   const history = messages.filter(m => m.role === 'user' || m.role === 'assistant')
-  const { system, user, sectionIds } = buildRequest({ cvData: workingCv, originalCv, scope, instruction, reference, history, others, language })
+  const { system, user, sectionIds } = buildRequest({ cvData: workingCv, originalCv, scope, instruction, reference, history, others, language, gender })
 
   const text = await complete({ system, user, signal, onRetry })
   const { summary, reply, targetJobTitle, changes } = parseAiJson(text)

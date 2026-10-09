@@ -19,6 +19,7 @@ export default {
           { p: 'Use the **EN / PL** switch in the header to change the language of the app. The first time you visit, the app follows your browser\'s language.' },
           { p: 'The **CV language** setting in the Template card is separate: it sets the language of the headings printed on the CV (Experience, Education, "Present"…) in the preview, the PDF and the Word file. By default it follows the app, but you can use the app in Polish and still print an English CV, or the other way round.' },
           { note: 'The text you write is never translated automatically. To translate it, use the **Translate** quick prompt in the AI assistant.' },
+          { p: 'When the AI writes or translates into Polish, it describes your work in the first person ("Founded and developed X" becomes "Założyłem i rozwijałem X"). Polish verbs change with gender, so choose **Gender forms in Polish text** in the Template card: masculine ("założyłem"), feminine ("założyłam"), or *Detect from my text*, which takes the forms from what you already wrote and never guesses from your name.' },
         ] },
         { title: 'Saving your work', blocks: [{ ul: [
           'Your CV is **auto-saved** in this browser — it survives page reloads and browser restarts.',

@@ -13,3 +13,10 @@ export function resolveCvLanguage(setting, interfaceLanguage) {
   if (isLanguage(setting)) return setting
   return isLanguage(interfaceLanguage) ? interfaceLanguage : DEFAULT_LANGUAGE
 }
+
+// Polish verbs and adjectives change with the speaker's gender (założyłem / założyłam), so the person
+// can say which forms their CV should use. 'auto' means: take them from the text, never guess.
+export const GENDER_FORMS = ['auto', 'masculine', 'feminine']
+export const DEFAULT_GENDER_FORMS = 'auto'
+
+export const normalizeGenderForms = setting => (GENDER_FORMS.includes(setting) ? setting : DEFAULT_GENDER_FORMS)

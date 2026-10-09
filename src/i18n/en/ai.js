@@ -266,7 +266,7 @@ export default {
       },
       translate: {
         label: 'Translate ({language})',
-        instruction: 'Translate the text of this CV into {language}: the profile, bullets, descriptions, skill categories and skill lists. Keep names of people, companies, schools, products and technologies as they are, and keep every number and date exactly. Do not add or remove anything.',
+        instruction: 'Translate the text of this CV into {language}: the profile, bullets, descriptions, skill categories and skill lists. Keep names of people, companies, schools, products and technologies as they are, and keep every number and date exactly. Describe my own work in the first person where the language does that. Do not add or remove anything.',
       },
     },
 

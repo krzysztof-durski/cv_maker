@@ -19,6 +19,7 @@ export default {
           { p: 'Przełącznik **EN / PL** w nagłówku zmienia język aplikacji. Przy pierwszej wizycie aplikacja używa języka Twojej przeglądarki.' },
           { p: 'Ustawienie **Język CV** na karcie Szablon jest osobne: określa język nagłówków drukowanych na CV (Doświadczenie, Wykształcenie, „Obecnie”…) w podglądzie, w pliku PDF i w pliku Word. Domyślnie podąża za językiem aplikacji, ale możesz korzystać z aplikacji po polsku i mimo to drukować CV po angielsku — albo odwrotnie.' },
           { note: 'Tekst, który wpisujesz, nigdy nie jest tłumaczony automatycznie. Aby go przetłumaczyć, użyj gotowego polecenia **Przetłumacz** w asystencie AI.' },
+          { p: 'Gdy AI pisze lub tłumaczy po polsku, opisuje Twoją pracę w pierwszej osobie („Founded and developed X” to „Założyłem i rozwijałem X”). Polskie czasowniki zmieniają się z rodzajem, więc wybierz **Formy gramatyczne w polskim tekście** na karcie Szablon: męskie („założyłem”), żeńskie („założyłam”) albo *Wykryj z mojego tekstu*, które bierze formy z tego, co już napisano, i nigdy nie zgaduje po imieniu.' },
         ] },
         { title: 'Zapisywanie pracy', blocks: [{ ul: [
           'Twoje CV jest **zapisywane automatycznie** w tej przeglądarce — przetrwa odświeżenie strony i ponowne uruchomienie przeglądarki.',

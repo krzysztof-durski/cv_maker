@@ -168,6 +168,11 @@ export default {
     cvLanguage: 'CV language',
     cvLanguageHint: 'The language of the headings printed on the CV (Experience, Education…). Your text stays as you wrote it.',
     cvLanguageAuto: 'Same as the app ({language})',
+    gender: 'Gender forms in Polish text',
+    genderHint: 'Polish verbs change with gender ("założyłem" or "założyłam"). This tells the AI which to use when it writes or translates into Polish. "Detect" takes it from your text and never guesses from your name.',
+    genderAuto: 'Detect from my text',
+    genderMasculine: 'Masculine (założyłem)',
+    genderFeminine: 'Feminine (założyłam)',
   },
 
   photoErrors: {

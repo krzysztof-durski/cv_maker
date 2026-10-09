@@ -168,6 +168,11 @@ export default {
     cvLanguage: 'Język CV',
     cvLanguageHint: 'Język nagłówków drukowanych na CV (Doświadczenie, Wykształcenie…). Twój tekst pozostaje bez zmian.',
     cvLanguageAuto: 'Jak w aplikacji ({language})',
+    gender: 'Formy gramatyczne w polskim tekście',
+    genderHint: 'Polskie czasowniki zmieniają się z rodzajem („założyłem” lub „założyłam”). To mówi AI, której formy użyć, gdy pisze lub tłumaczy po polsku. „Wykryj” bierze rodzaj z Twojego tekstu i nigdy nie zgaduje go po imieniu.',
+    genderAuto: 'Wykryj z mojego tekstu',
+    genderMasculine: 'Męskie (założyłem)',
+    genderFeminine: 'Żeńskie (założyłam)',
   },
 
   photoErrors: {

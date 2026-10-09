@@ -1,6 +1,6 @@
 import { DEFAULT_TEMPLATE, normalizeTemplate } from './templates.js'
 import { localizedMap } from '../i18n/core.js'
-import { DEFAULT_CV_LANGUAGE, normalizeCvLanguage } from '../i18n/cvLanguage.js'
+import { DEFAULT_CV_LANGUAGE, normalizeCvLanguage, DEFAULT_GENDER_FORMS, normalizeGenderForms } from '../i18n/cvLanguage.js'
 
 // Section and link-type names in the current language (read each time, so they follow a language switch).
 export const SECTION_LABELS = localizedMap(
@@ -13,6 +13,7 @@ export const LINK_TYPES = localizedMap(['linkedin', 'github', 'portfolio', 'othe
 export const DEFAULT_DATA = {
   template: DEFAULT_TEMPLATE,
   language: DEFAULT_CV_LANGUAGE, // language of the headings printed on the CV: 'auto' (follow the app), 'en' or 'pl'
+  gender: DEFAULT_GENDER_FORMS, // which gendered forms Polish text uses: 'auto', 'masculine' or 'feminine'
   personal: {
     name: '',
     jobTitle: '',
@@ -98,6 +99,7 @@ export function mergeWithDefaults(stored) {
     ...stored,
     template: normalizeTemplate(stored.template),
     language: normalizeCvLanguage(stored.language),
+    gender: normalizeGenderForms(stored.gender),
     personal: migratePersonal(stored.personal),
     profile: { ...DEFAULT_DATA.profile, ...(stored.profile || {}) },
     sectionOrder: migrateSectionOrder(stored.sectionOrder),

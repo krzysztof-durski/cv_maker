@@ -139,6 +139,7 @@ export default function AssistantModal({ open, requestId, initialScope = 'cv', c
         instruction: text,
         reference: referenceText,
         language: lang,
+        gender: cvData.gender,
         messages: first ? [] : c.messages,
         others: describeOthers(cvData, conversations.filter(x => x.id !== id)),
         newId,

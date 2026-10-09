@@ -3,8 +3,10 @@ import { PROVIDERS, PROVIDER_IDS, pickDefaultModel } from '../../ai/providers'
 import Modal, { primaryBtn, secondaryBtn } from './Modal'
 import { Spinner } from './icons'
 import { inputClass, labelClass } from '../editor/sections/shared'
+import { useI18n } from '../../i18n/I18nProvider'
 
 export default function AiSettingsModal({ settings, onClose }) {
+  const { t } = useI18n()
   const { provider, keys, models, remember } = settings
   const meta = PROVIDERS[provider]
   const apiKey = keys[provider] || ''
@@ -32,7 +34,7 @@ export default function AiSettingsModal({ settings, onClose }) {
       setAvailable(prev => ({ ...prev, [provider]: found }))
       // Only choose a default when nothing is set; never replace a model the user picked or typed.
       if (!models[provider]) settings.setModel(provider, pickDefaultModel(provider, found))
-      if (announce) setStatus({ ok: true, text: `Key works. ${found.length} model${found.length === 1 ? '' : 's'} available.` })
+      if (announce) setStatus({ ok: true, text: t('ai.settings.keyWorks', { count: found.length }) })
     } catch (err) {
       if (err?.name === 'AbortError') return
       setStatus({ ok: false, text: err.message })
@@ -59,16 +61,15 @@ export default function AiSettingsModal({ settings, onClose }) {
 
   return (
     <Modal
-      title="AI settings"
-      subtitle="Use your own AI account to tailor and edit your CV."
+      title={t('ai.settings.title')}
+      subtitle={t('ai.settings.subtitle')}
       size="md"
       onClose={onClose}
-      footer={<button className={primaryBtn} onClick={onClose}>Done</button>}
+      footer={<button className={primaryBtn} onClick={onClose}>{t('common.done')}</button>}
     >
       <div className="space-y-4">
         <div className="rounded-lg border border-blue-100 bg-blue-50 p-3 text-xs text-blue-800 dark:border-blue-900 dark:bg-blue-950 dark:text-blue-200">
-          Your key stays in this browser and is sent only to the provider you pick below. CV Maker has no server and never sees it.
-          The provider bills usage to your own account.
+          {t('ai.settings.privacy')}
         </div>
 
         <div className="flex gap-1 rounded-lg border border-gray-200 bg-gray-100 p-0.5 dark:border-gray-700 dark:bg-gray-800">
@@ -81,9 +82,9 @@ export default function AiSettingsModal({ settings, onClose }) {
 
         <div>
           <div className="mb-1 flex items-baseline justify-between">
-            <label className={labelClass} htmlFor="ai-key">API key</label>
+            <label className={labelClass} htmlFor="ai-key">{t('ai.settings.key')}</label>
             <a href={meta.keyUrl} target="_blank" rel="noreferrer" className="text-xs text-indigo-600 hover:underline dark:text-indigo-400">
-              Get a key ↗
+              {t('ai.settings.getKey')}
             </a>
           </div>
           <div className="flex gap-2">
@@ -98,16 +99,16 @@ export default function AiSettingsModal({ settings, onClose }) {
               spellCheck={false}
               className={inputClass}
             />
-            <button className={secondaryBtn} onClick={() => setShowKey(v => !v)}>{showKey ? 'Hide' : 'Show'}</button>
+            <button className={secondaryBtn} onClick={() => setShowKey(v => !v)}>{showKey ? t('common.hide') : t('common.show')}</button>
           </div>
         </div>
 
         <div>
           <div className="mb-1 flex items-baseline justify-between">
-            <label className={labelClass} htmlFor="ai-model">Model</label>
+            <label className={labelClass} htmlFor="ai-model">{t('ai.settings.model')}</label>
             {list.length > 0 && customModel && (
               <button onClick={() => setCustomModel(false)} className="text-xs text-indigo-600 hover:underline dark:text-indigo-400">
-                Choose from list
+                {t('ai.settings.chooseFromList')}
               </button>
             )}
           </div>
@@ -120,19 +121,19 @@ export default function AiSettingsModal({ settings, onClose }) {
               onChange={e => (e.target.value === CUSTOM ? setCustomModel(true) : settings.setModel(provider, e.target.value))}
               className={inputClass}
             >
-              {!currentModel && <option value="">Select a model…</option>}
+              {!currentModel && <option value="">{t('ai.settings.selectModel')}</option>}
               {currentModel && !list.some(m => m.id === currentModel) && (
-                <option value={currentModel}>{currentModel} (not in the list)</option>
+                <option value={currentModel}>{t('ai.settings.notInList', { model: currentModel })}</option>
               )}
               {list.map(m => <option key={m.id} value={m.id}>{m.label}</option>)}
-              <option value={CUSTOM}>Other… (type a model ID)</option>
+              <option value={CUSTOM}>{t('ai.settings.otherModel')}</option>
             </select>
           ) : (
             <input
               id="ai-model"
               value={currentModel}
               onChange={e => settings.setModel(provider, e.target.value.trim())}
-              placeholder={apiKey ? (testing ? 'Loading models…' : 'Type a model ID, or press Test key to load the list') : 'Add your key first to load the model list'}
+              placeholder={apiKey ? (testing ? t('ai.settings.placeholderLoading') : t('ai.settings.placeholderTypeOrTest')) : t('ai.settings.placeholderNeedKey')}
               autoComplete="off"
               spellCheck={false}
               className={inputClass}
@@ -143,7 +144,7 @@ export default function AiSettingsModal({ settings, onClose }) {
         <div className="flex flex-wrap items-center gap-2">
           <button className={primaryBtn} disabled={!apiKey || testing} onClick={() => loadModels()}>
             {testing && <Spinner className="h-3.5 w-3.5" />}
-            {testing ? 'Checking…' : 'Test key & load models'}
+            {testing ? t('ai.settings.checking') : t('ai.settings.test')}
           </button>
           {apiKey && (
             <button
@@ -155,7 +156,7 @@ export default function AiSettingsModal({ settings, onClose }) {
                 setStatus(null)
               }}
             >
-              Remove key
+              {t('ai.settings.removeKey')}
             </button>
           )}
         </div>
@@ -178,10 +179,9 @@ export default function AiSettingsModal({ settings, onClose }) {
             className="mt-0.5 h-4 w-4 accent-indigo-600"
           />
           <span className="text-xs text-gray-600 dark:text-gray-300">
-            <span className="font-medium text-gray-800 dark:text-gray-100">Remember my key on this device</span>
+            <span className="font-medium text-gray-800 dark:text-gray-100">{t('ai.settings.rememberTitle')}</span>
             <br />
-            Off: the key is forgotten when you close this tab. On: it is saved in this browser until you remove it.
-            Don&apos;t turn this on for a shared or public computer.
+            {t('ai.settings.rememberText')}
           </span>
         </label>
       </div>

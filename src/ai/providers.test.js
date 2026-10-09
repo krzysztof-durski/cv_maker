@@ -3,8 +3,9 @@ import assert from 'node:assert/strict'
 
 import { PROVIDERS, AiError, retryPolicy, relevantGeminiModels, relevantOpenAiModels, relevantAnthropicModels } from './providers.js'
 
-// Retries back off for seconds in the app; tests must not wait.
-retryPolicy.delaysMs = [0, 0, 0]
+// Remember the real schedule, then zero it. Retries back off for seconds in the app; tests must not wait.
+const importedDefaults = { delaysMs: [...retryPolicy.delaysMs] }
+retryPolicy.delaysMs = retryPolicy.delaysMs.map(() => 0)
 
 // Replace fetch with a stub that records each request. With several responses they are returned
 // in order, and the last one repeats.
@@ -162,13 +163,20 @@ test('network failures are reported as such, aborts pass through', async t => {
 const overloaded = { status: 503, body: { error: { code: 503, message: 'The model is overloaded. Please try again later.', status: 'UNAVAILABLE' } } }
 const geminiOk = { body: { candidates: [{ finishReason: 'STOP', content: { parts: [{ text: '{"a":1}' }] } }] } }
 
+test('a request is retried five times, so six attempts in all, with a back-off that stays under a minute', () => {
+  const { delaysMs } = importedDefaults
+  assert.equal(delaysMs.length, 5)
+  assert.deepEqual(delaysMs, [...delaysMs].sort((a, b) => a - b))
+  assert.ok(delaysMs.reduce((a, b) => a + b, 0) <= 60_000)
+})
+
 test('a transient 503 is retried and the request then succeeds', async t => {
   const calls = stubFetch(t, overloaded, overloaded, geminiOk)
   const retries = []
   const text = await PROVIDERS.gemini.complete({ ...args, onRetry: r => retries.push(r) })
   assert.equal(text, '{"a":1}')
   assert.equal(calls.length, 3)
-  assert.deepEqual(retries, [{ attempt: 1, total: 3 }, { attempt: 2, total: 3 }])
+  assert.deepEqual(retries, [{ attempt: 1, total: 5 }, { attempt: 2, total: 5 }])
 })
 
 test('retries stop after the policy is exhausted and the error keeps the provider message', async t => {
@@ -176,11 +184,12 @@ test('retries stop after the policy is exhausted and the error keeps the provide
   await assert.rejects(PROVIDERS.gemini.complete(args), err => {
     assert.equal(err.kind, 'unavailable')
     assert.match(err.message, /having trouble right now \(503: The model is overloaded/)
-    assert.match(err.message, /I tried 4 times/)
+    assert.match(err.message, /I tried 6 times/)
     assert.match(err.message, /different model/)
+    assert.match(err.message, /cancel and try again/)
     return true
   })
-  assert.equal(calls.length, 4)
+  assert.equal(calls.length, 6)
 })
 
 test("Anthropic's 529 overloaded status is retried too", async t => {

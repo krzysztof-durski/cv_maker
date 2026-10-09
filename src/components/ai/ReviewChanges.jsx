@@ -1,3 +1,5 @@
+import { useI18n } from '../../i18n/I18nProvider'
+
 // The suggested changes, one checkbox per change. Nothing is applied until the user confirms.
 
 function Block({ tone, label, text }) {
@@ -18,6 +20,7 @@ const KIND_STYLE = {
 }
 
 function Item({ item, checked, onToggle, onDiscuss }) {
+  const { t } = useI18n()
   return (
     <div className={`p-3 transition-opacity ${checked ? '' : 'opacity-60'}`}>
       <div className="flex items-start gap-2.5">
@@ -38,20 +41,20 @@ function Item({ item, checked, onToggle, onDiscuss }) {
             <button
               onClick={onDiscuss}
               className="text-xs text-indigo-600 hover:underline dark:text-indigo-400"
-              title="Ask the AI about this change"
+              title={t('ai.review.discussTitle')}
             >
-              Discuss
+              {t('ai.review.discuss')}
             </button>
           </div>
 
           {item.kind === 'add' ? (
-            <Block tone="after" label="New" text={item.after} />
+            <Block tone="after" label={t('ai.review.new')} text={item.after} />
           ) : item.kind === 'remove' ? (
-            <Block tone="before" label="Removed" text={item.before} />
+            <Block tone="before" label={t('ai.review.removed')} text={item.before} />
           ) : (
             <div className="grid gap-1.5 sm:grid-cols-2">
-              <Block tone="before" label="Before" text={item.before} />
-              <Block tone="after" label="After" text={item.after} />
+              <Block tone="before" label={t('ai.review.before')} text={item.before} />
+              <Block tone="after" label={t('ai.review.after')} text={item.after} />
             </div>
           )}
         </div>
@@ -61,6 +64,7 @@ function Item({ item, checked, onToggle, onDiscuss }) {
 }
 
 export default function ReviewChanges({ sections, warnings, notes, declined, onToggleItem, onToggleSection, onDiscuss }) {
+  const { t } = useI18n()
   return (
     <div className="space-y-3">
       {notes.map((note, i) => (
@@ -70,7 +74,7 @@ export default function ReviewChanges({ sections, warnings, notes, declined, onT
       ))}
 
       <p className="text-xs text-gray-500 dark:text-gray-400">
-        Tick the changes you want. Nothing changes in your CV until you press Apply.
+        {t('ai.review.hint')}
       </p>
 
       {sections.map(section => {
@@ -95,7 +99,7 @@ export default function ReviewChanges({ sections, warnings, notes, declined, onT
                 {section.label}
               </span>
               <span className="text-xs text-gray-400 dark:text-gray-500">
-                {section.items.length} change{section.items.length === 1 ? '' : 's'}
+                {t('ai.review.changes', { count: section.items.length })}
               </span>
             </label>
 

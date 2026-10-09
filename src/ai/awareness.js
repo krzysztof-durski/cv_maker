@@ -2,7 +2,8 @@
 // contradict or repeat suggestions that are pending elsewhere. Changes that were already
 // applied need no mention: they are in the CV every conversation works from.
 
-import { AI_SECTIONS, parseScope, getEntries, entryLabel } from './sections.js'
+import { parseScope, getEntries, entryLabel, sectionLabel } from './sections.js'
+import { t, translate, withLanguage } from '../i18n/core.js'
 import { diffAll, applyItems } from './diff.js'
 
 const MAX_ITEMS_EACH = 20
@@ -12,10 +13,11 @@ const clip = (text, n) => {
   return flat.length > n ? `${flat.slice(0, n - 1)}…` : flat
 }
 
-export function scopeTitle(scope, cvData) {
+/** A short name for what a conversation is about, in `lang` (default: the current language). */
+export function scopeTitle(scope, cvData, lang) {
   const { section, entryId } = parseScope(scope)
-  if (section === 'cv') return 'Entire CV'
-  const label = AI_SECTIONS[section]?.label || section
+  if (section === 'cv') return lang ? translate(lang, 'ai.scope.all') : t('ai.scope.all')
+  const label = sectionLabel(section, lang)
   if (!entryId) return label
   const entry = getEntries(section, cvData?.[section]).find(e => e.id === entryId)
   const name = entry && entryLabel(section, entry)
@@ -36,6 +38,11 @@ export function pendingItems(cvData, conversation) {
  * @returns {string} text for <other_conversations>, or '' when there is nothing to tell
  */
 export function describeOthers(cvData, conversations) {
+  // This is read by the model, not the user, so it is always English: labels, field names and all.
+  return withLanguage('en', () => describeInEnglish(cvData, conversations))
+}
+
+function describeInEnglish(cvData, conversations) {
   const blocks = []
   for (const c of conversations) {
     if (!c.messages?.length) continue
@@ -43,7 +50,7 @@ export function describeOthers(cvData, conversations) {
     const reply = [...c.messages].reverse().find(m => m.role === 'assistant')
     const lines = [`Conversation ${c.number} (${scopeTitle(c.scope, cvData)}), ${pending.length ? `${pending.length} pending suggestion${pending.length === 1 ? '' : 's'}, not applied yet` : 'no pending suggestions'}:`]
     for (const { section, item } of pending.slice(0, MAX_ITEMS_EACH)) {
-      const what = [AI_SECTIONS[section.id].label, item.label, item.kind === 'remove' ? '' : item.fieldLabel].filter(Boolean).join(' · ')
+      const what = [sectionLabel(section.id), item.label, item.kind === 'remove' ? '' : item.fieldLabel].filter(Boolean).join(' · ')
       lines.push(`- ${what}: ${item.kind === 'remove' ? 'remove it' : clip(item.after, 200)}`)
     }
     if (pending.length > MAX_ITEMS_EACH) lines.push(`- … and ${pending.length - MAX_ITEMS_EACH} more`)

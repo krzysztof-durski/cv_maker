@@ -18,6 +18,7 @@ function blank(scope = 'cv') {
     busy: false,
     retryNote: '',
     error: '', // first request only; later failures appear in the chat
+    errorKind: '', // AiError.kind of `error`, to decide what advice goes with it
     chatInput: '',
   }
 }
@@ -65,7 +66,7 @@ export function useConversations() {
     aborts.current[id]?.abort()
     patch(id, {
       instruction: '', presetId: null, messages: [], sections: [], declined: new Set(), notes: [],
-      busy: false, retryNote: '', error: '', chatInput: '',
+      busy: false, retryNote: '', error: '', errorKind: '', chatInput: '',
     })
   }, [patch])
 

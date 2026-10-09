@@ -6,7 +6,7 @@
 //   - Anthropic requires `anthropic-dangerous-direct-browser-access: true` for browser calls.
 //   - Gemini accepts the key in `x-goog-api-key`, which keeps it out of URLs and logs.
 
-import { CUT_OFF_MESSAGE } from './parseResponse.js'
+import { t } from '../i18n/core.js'
 
 export class AiError extends Error {
   constructor(message, kind = 'api', { retryable = false } = {}) {
@@ -19,7 +19,8 @@ export class AiError extends Error {
 
 // Overload and server errors usually clear within seconds (Gemini's 503 "The model is overloaded"
 // is the common one), so those requests are retried before the user ever sees an error.
-export const retryPolicy = { delaysMs: [2000, 5000, 10000] }
+// One entry per retry, so this is 5 retries (6 attempts in all) over about 40 seconds.
+export const retryPolicy = { delaysMs: [2000, 4000, 8000, 12000, 15000] }
 const RETRYABLE_STATUS = new Set([500, 502, 503, 504, 529]) // 529 = Anthropic "overloaded"
 
 // Sleep that rejects as soon as the user cancels.
@@ -53,10 +54,7 @@ async function callOnce(label, url, { method = 'GET', headers, body, signal }) {
   } catch (err) {
     if (err?.name === 'AbortError') throw err
     // OpenAI answers a rejected key without CORS headers, so a wrong key can surface here too.
-    throw new AiError(
-      `Couldn't reach ${label}. Check your internet connection and that no browser extension or network filter is blocking it. A wrong API key can also cause this, so try "Test key" in AI settings.`,
-      'network'
-    )
+    throw new AiError(t('ai.errors.network', { provider: label }), 'network')
   }
   if (res.ok) return res.json()
 
@@ -65,17 +63,17 @@ async function callOnce(label, url, { method = 'GET', headers, body, signal }) {
   // Gemini reports a bad key as 400 rather than 401.
   const badKey = res.status === 400 && /api key (is )?(not valid|invalid)|invalid api key/i.test(detail)
   if (res.status === 401 || res.status === 403 || badKey) {
-    throw new AiError(`${label} rejected your API key${suffix}`, 'auth')
+    throw new AiError(t('ai.errors.auth', { provider: label, detail: suffix }), 'auth')
   }
   if (res.status === 429) {
-    throw new AiError(`${label} says you've hit a rate limit or are out of quota${suffix}`, 'quota')
+    throw new AiError(t('ai.errors.quota', { provider: label, detail: suffix }), 'quota')
   }
   if (res.status >= 500) {
-    throw new AiError(`${label} is having trouble right now (${res.status}${suffix})`, 'unavailable', {
+    throw new AiError(t('ai.errors.unavailable', { provider: label, status: res.status, detail: suffix }), 'unavailable', {
       retryable: RETRYABLE_STATUS.has(res.status),
     })
   }
-  throw new AiError(`${label} returned an error (${res.status})${suffix}`)
+  throw new AiError(t('ai.errors.other', { provider: label, status: res.status, detail: suffix }))
 }
 
 // `onRetry({ attempt, total })` lets the UI say "busy, retrying…" while we back off.
@@ -87,8 +85,8 @@ async function call(label, url, options) {
       if (!err.retryable) throw err
       const delay = retryPolicy.delaysMs[attempt]
       if (delay === undefined) {
-        const tried = attempt > 0 ? ` I tried ${attempt + 1} times.` : ''
-        err.message += `${tried} Wait a minute and try again, or choose a different model in AI settings.`
+        const tried = attempt > 0 ? t('ai.errors.tried', { count: attempt + 1 }) : ''
+        err.message += `${tried}${t('ai.errors.tryAgain')}`
         throw err
       }
       options.onRetry?.({ attempt: attempt + 1, total: retryPolicy.delaysMs.length })
@@ -169,8 +167,8 @@ const openai = {
       signal, onRetry,
     })
     const choice = data.choices?.[0]
-    if (choice?.message?.refusal) throw new AiError(`OpenAI declined the request: ${choice.message.refusal}`, 'blocked')
-    if (choice?.finish_reason === 'length') throw new AiError(CUT_OFF_MESSAGE, 'cutoff')
+    if (choice?.message?.refusal) throw new AiError(t('ai.errors.openaiDeclined', { reason: choice.message.refusal }), 'blocked')
+    if (choice?.finish_reason === 'length') throw new AiError(t('ai.errors.cutoff'), 'cutoff')
     return choice?.message?.content || ''
   },
 }
@@ -203,8 +201,8 @@ const anthropic = {
       body: { model, max_tokens: 16000, system, messages: [{ role: 'user', content: user }] },
       signal, onRetry,
     })
-    if (data.stop_reason === 'max_tokens') throw new AiError(CUT_OFF_MESSAGE, 'cutoff')
-    if (data.stop_reason === 'refusal') throw new AiError('Claude declined this request.', 'blocked')
+    if (data.stop_reason === 'max_tokens') throw new AiError(t('ai.errors.cutoff'), 'cutoff')
+    if (data.stop_reason === 'refusal') throw new AiError(t('ai.errors.claudeDeclined'), 'blocked')
     return (data.content || []).filter(b => b.type === 'text').map(b => b.text).join('')
   },
 }
@@ -238,12 +236,12 @@ const gemini = {
       signal, onRetry,
     })
     if (data.promptFeedback?.blockReason) {
-      throw new AiError(`Gemini blocked the request (${data.promptFeedback.blockReason}).`, 'blocked')
+      throw new AiError(t('ai.errors.geminiBlocked', { reason: data.promptFeedback.blockReason }), 'blocked')
     }
     const candidate = data.candidates?.[0]
-    if (candidate?.finishReason === 'MAX_TOKENS') throw new AiError(CUT_OFF_MESSAGE, 'cutoff')
+    if (candidate?.finishReason === 'MAX_TOKENS') throw new AiError(t('ai.errors.cutoff'), 'cutoff')
     if (candidate?.finishReason && !['STOP', 'FINISH_REASON_UNSPECIFIED'].includes(candidate.finishReason)) {
-      throw new AiError(`Gemini stopped early (${candidate.finishReason}).`, 'blocked')
+      throw new AiError(t('ai.errors.geminiStopped', { reason: candidate.finishReason }), 'blocked')
     }
     return (candidate?.content?.parts || []).filter(p => p.text && !p.thought).map(p => p.text).join('')
   },

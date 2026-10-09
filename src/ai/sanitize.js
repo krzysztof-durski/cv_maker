@@ -11,6 +11,7 @@
 // Removal is explicit on purpose: an answer that merely forgets an entry never deletes it.
 
 import { AI_SECTIONS, getEntries, withEntries, entryLabel } from './sections.js'
+import { t } from '../i18n/core.js'
 
 const BULLET_PREFIX = /^[\s•·●▪\-–—*]+/
 
@@ -232,7 +233,7 @@ export function sanitizeChanges(base, changes, {
     if (chosen) {
       if (chosen !== current) result.personal = { ...base.personal, jobTitle: chosen }
     } else if (targetJobTitle || (proposed && proposed !== current)) {
-      notes.push(`The AI suggested the job title "${targetJobTitle || proposed}", but that wording isn't in the job text or in what you wrote, so your job title was left as it is.`)
+      notes.push(t('ai.notes.jobTitleRejected', { title: targetJobTitle || proposed }))
     }
   }
 
@@ -271,7 +272,7 @@ export function computeWarnings(original, draft, { grounding = '' } = {}) {
 
     const fresh = [...numbersIn(draft[id])].filter(n => !known.has(n))
     if (fresh.length) {
-      messages.push(`Contains numbers not found in your CV or in what you provided: ${fresh.slice(0, 6).join(', ')}. Check they're true before applying.`)
+      messages.push(t('ai.notes.numbers', { numbers: fresh.slice(0, 6).join(', ') }))
     }
 
     if (spec.kind !== 'object' && !spec.freeform) {
@@ -285,7 +286,7 @@ export function computeWarnings(original, draft, { grounding = '' } = {}) {
         }
       }
       if (unknown.size) {
-        messages.push(`New entries mention ${[...unknown].map(v => `"${v}"`).join(', ')}, which isn't in your CV or in what you provided. Make sure it's true before applying.`)
+        messages.push(t('ai.notes.newEntries', { names: [...unknown].map(v => `"${v}"`).join(', ') }))
       }
     }
 

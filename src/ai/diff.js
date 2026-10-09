@@ -11,6 +11,7 @@
 //   order    new order of the entries             { ids }
 
 import { AI_SECTIONS, FIELD_LABELS, getEntries, withEntries, entryLabel } from './sections.js'
+import { t } from '../i18n/core.js'
 
 export function valueToText(value) {
   if (Array.isArray(value)) return value.map(v => `• ${v}`).join('\n')
@@ -50,7 +51,7 @@ function diffList(id, spec, beforeValue, afterValue) {
   const afterEntries = getEntries(id, afterValue)
   const beforeById = new Map(beforeEntries.map(e => [e.id, e]))
   const afterIds = new Set(afterEntries.map(e => e.id))
-  const name = entry => entryLabel(id, entry) || 'Untitled entry'
+  const name = entry => entryLabel(id, entry) || t('ai.diff.untitled')
   const items = []
 
   for (const entry of afterEntries) {
@@ -60,7 +61,7 @@ function diffList(id, spec, beforeValue, afterValue) {
         key: `${id}:+${entry.id}`,
         kind: 'add',
         label: name(entry),
-        fieldLabel: 'New entry',
+        fieldLabel: t('ai.diff.newEntry'),
         before: '',
         after: entryToText(id, entry),
         op: { entry },
@@ -87,7 +88,7 @@ function diffList(id, spec, beforeValue, afterValue) {
       key: `${id}:-${entry.id}`,
       kind: 'remove',
       label: name(entry),
-      fieldLabel: 'Removed entry',
+      fieldLabel: t('ai.diff.removedEntry'),
       before: entryToText(id, entry),
       after: '',
       op: { entryId: entry.id },
@@ -100,8 +101,8 @@ function diffList(id, spec, beforeValue, afterValue) {
     items.push({
       key: `${id}:order`,
       kind: 'order',
-      label: 'Entry order',
-      fieldLabel: 'Order',
+      label: t('ai.diff.entryOrder'),
+      fieldLabel: t('ai.diff.order'),
       before: sharedBefore.map(name).join('\n'),
       after: sharedAfter.map(name).join('\n'),
       op: { ids: sharedAfter.map(e => e.id) },
@@ -134,8 +135,8 @@ function linkMoves(sections) {
         if (!addition) continue
         removal.pair = addition.key
         addition.pair = removal.key
-        removal.fieldLabel = `Moved to ${AI_SECTIONS[to.id].label}`
-        addition.fieldLabel = `Moved from ${AI_SECTIONS[from.id].label}`
+        removal.fieldLabel = t('ai.diff.movedTo', { section: AI_SECTIONS[to.id].label })
+        addition.fieldLabel = t('ai.diff.movedFrom', { section: AI_SECTIONS[from.id].label })
         break
       }
     }

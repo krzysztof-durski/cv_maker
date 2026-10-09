@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { PROVIDERS, PROVIDER_IDS, pickDefaultModel } from '../../ai/providers'
+import { useI18n } from '../../i18n/I18nProvider'
 
 // Model lists are fetched once per key and remembered while the page is open.
 const cache = new Map()
@@ -9,6 +10,7 @@ const selectClass =
 
 /** Switch provider and model, also in the middle of a conversation. The next message uses the new choice. */
 export default function ModelPicker({ settings, onOpenSettings }) {
+  const { t } = useI18n()
   const { provider, apiKey, keys } = settings
   const cacheKey = `${provider}:${apiKey.slice(-8)}`
   const [lists, setLists] = useState({})
@@ -36,25 +38,25 @@ export default function ModelPicker({ settings, onOpenSettings }) {
   return (
     <div className="flex flex-wrap items-center gap-1.5" data-testid="model-picker">
       <select
-        aria-label="AI provider"
+        aria-label={t('ai.picker.provider')}
         value={provider}
         onChange={e => (e.target.value === '__add__' ? onOpenSettings() : settings.setProvider(e.target.value))}
         className={selectClass}
       >
         {providers.map(id => <option key={id} value={id}>{PROVIDERS[id].label}</option>)}
-        <option value="__add__">Add another provider…</option>
+        <option value="__add__">{t('ai.picker.addProvider')}</option>
       </select>
       <select
-        aria-label="AI model"
+        aria-label={t('ai.picker.model')}
         value={current}
         onChange={e => (e.target.value === '__other__' ? onOpenSettings() : settings.setModel(provider, e.target.value))}
         className={selectClass}
-        title={loading ? 'Loading models…' : 'The next message uses this model'}
+        title={loading ? t('ai.picker.loadingTitle') : t('ai.picker.nextUses')}
       >
-        {!current && <option value="">{loading ? 'Loading…' : 'Select a model…'}</option>}
+        {!current && <option value="">{loading ? t('ai.picker.loading') : t('ai.picker.select')}</option>}
         {current && !list.some(m => m.id === current) && <option value={current}>{current}</option>}
         {list.map(m => <option key={m.id} value={m.id}>{m.id}</option>)}
-        <option value="__other__">Other model…</option>
+        <option value="__other__">{t('ai.picker.otherModel')}</option>
       </select>
     </div>
   )

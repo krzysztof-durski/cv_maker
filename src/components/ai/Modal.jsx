@@ -1,11 +1,13 @@
 import { useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import { CloseIcon } from './icons'
+import { useI18n } from '../../i18n/I18nProvider'
 
 const openModals = []
 
 // Full-screen on phones, centred dialog from `sm:` up. `no-print` keeps it out of the PDF.
 export default function Modal({ title, subtitle, onClose, children, footer, size = 'lg' }) {
+  const { t } = useI18n()
   const panelRef = useRef(null)
   // Callers pass inline functions; a ref keeps the effect below from re-running (and re-focusing) every render.
   const onCloseRef = useRef(onClose)
@@ -48,7 +50,8 @@ export default function Modal({ title, subtitle, onClose, children, footer, size
           <button
             onClick={onClose}
             className="grid h-8 w-8 shrink-0 place-items-center rounded-lg text-gray-500 transition-colors hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800"
-            title="Close"
+            title={t('common.close')}
+            aria-label={t('common.close')}
           >
             <CloseIcon />
           </button>

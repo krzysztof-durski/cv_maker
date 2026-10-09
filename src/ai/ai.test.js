@@ -459,7 +459,7 @@ test('"Any suggestions?" is offered for the whole CV, every section and every si
   const suggest = presetsForScope('cv').find(p => p.id === 'suggest')
   assert.match(suggest.instruction, /in your reply/)
   assert.match(suggest.instruction, /Do not change anything yet/)
-  assert.equal(suggest.needsReference, undefined) // works with or without a job description
+  assert.ok(!suggest.needsReference) // works with or without a job description
 })
 
 test('presets are filtered by scope, and include the clean-up ones', () => {

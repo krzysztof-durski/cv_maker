@@ -4,6 +4,7 @@ import AssistantModal from './AssistantModal'
 import AiSettingsModal from './AiSettingsModal'
 import UndoBar from './UndoBar'
 import { applyItems } from '../../ai/diff'
+import { useI18n } from '../../i18n/I18nProvider'
 
 /**
  * Owns the AI modals and the one-step undo. `settings` comes from useAiSettings() in the page,
@@ -13,6 +14,7 @@ import { applyItems } from '../../ai/diff'
  * conversation with suggestions under review is still there when it is opened again.
  */
 export function AiProvider({ cvData, setCvData, settings, children }) {
+  const { t } = useI18n()
   const [assistant, setAssistant] = useState({ mounted: false, open: false, scope: 'cv', requestId: 0 })
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [undo, setUndo] = useState(null) // { snapshot, applied, count }
@@ -58,7 +60,7 @@ export function AiProvider({ cvData, setCvData, settings, children }) {
 
       {undo && (
         <UndoBar
-          message={`AI applied ${undo.count} change${undo.count === 1 ? '' : 's'}`}
+          message={t('ai.undo.applied', { count: undo.count })}
           onUndo={() => { setCvData(undo.snapshot); setUndo(null) }}
           onDismiss={() => setUndo(null)}
         />

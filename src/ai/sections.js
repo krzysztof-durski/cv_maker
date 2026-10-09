@@ -12,22 +12,24 @@
 // canAdd:    legacy answer format only (a bare array): which sections may gain entries that way.
 // perEntry:  whether a single entry (one job, one project…) can be sent to the AI on its own.
 
+import { t, translate, localizedMap } from '../i18n/core.js'
+
 const join = (...parts) => parts.filter(Boolean).join(' — ')
 
 export const AI_SECTIONS = {
   personal: {
-    label: 'Job title',
+    get label() { return sectionLabel('personal') },
     kind: 'object',
     editable: ['jobTitle'],
   },
   profile: {
-    label: 'Profile',
+    get label() { return sectionLabel('profile') },
     kind: 'object',
     editable: ['text'],
   },
   experience: {
     perEntry: true,
-    label: 'Experience',
+    get label() { return sectionLabel('experience') },
     kind: 'list',
     editable: ['bullets'],
     fields: ['title', 'company', 'location', 'startDate', 'endDate', 'bullets'],
@@ -36,7 +38,7 @@ export const AI_SECTIONS = {
   },
   education: {
     perEntry: true,
-    label: 'Education',
+    get label() { return sectionLabel('education') },
     kind: 'list',
     editable: ['bullets'],
     fields: ['school', 'degree', 'field', 'location', 'startDate', 'endDate', 'bullets'],
@@ -45,7 +47,7 @@ export const AI_SECTIONS = {
   },
   projects: {
     perEntry: true,
-    label: 'Projects',
+    get label() { return sectionLabel('projects') },
     kind: 'list',
     editable: ['description', 'technologies', 'bullets'],
     fields: ['name', 'technologies', 'startDate', 'endDate', 'link', 'description', 'bullets'],
@@ -53,7 +55,7 @@ export const AI_SECTIONS = {
     entryLabel: e => e.name,
   },
   skills: {
-    label: 'Skills',
+    get label() { return sectionLabel('skills') },
     kind: 'list',
     editable: ['category', 'items'],
     fields: ['category', 'items'],
@@ -64,7 +66,7 @@ export const AI_SECTIONS = {
   },
   volunteer: {
     perEntry: true,
-    label: 'Volunteer & Extracurriculars',
+    get label() { return sectionLabel('volunteer') },
     kind: 'list',
     editable: ['bullets'],
     fields: ['role', 'org', 'location', 'startDate', 'endDate', 'bullets'],
@@ -72,7 +74,7 @@ export const AI_SECTIONS = {
     entryLabel: e => join(e.role, e.org),
   },
   certifications: {
-    label: 'Certifications & Awards',
+    get label() { return sectionLabel('certifications') },
     kind: 'list',
     editable: ['description'],
     fields: ['name', 'issuer', 'date', 'description'],
@@ -80,7 +82,7 @@ export const AI_SECTIONS = {
     entryLabel: e => join(e.name, e.issuer),
   },
   languages: {
-    label: 'Languages',
+    get label() { return sectionLabel('languages') },
     kind: 'list',
     editable: [],
     fields: ['language', 'proficiency'],
@@ -89,7 +91,7 @@ export const AI_SECTIONS = {
   },
   custom: {
     perEntry: true,
-    label: 'Custom Section',
+    get label() { return sectionLabel('custom') },
     kind: 'custom',
     editable: ['bullets'],
     fields: ['title', 'subtitle', 'startDate', 'endDate', 'bullets'],
@@ -98,32 +100,14 @@ export const AI_SECTIONS = {
   },
 }
 
-export const FIELD_LABELS = {
-  jobTitle: 'Job title',
-  text: 'Bio',
-  bullets: 'Bullets',
-  description: 'Description',
-  technologies: 'Technologies',
-  category: 'Category',
-  items: 'Skills',
-  title: 'Title',
-  company: 'Company',
-  school: 'School',
-  degree: 'Degree',
-  field: 'Field of study',
-  location: 'Location',
-  startDate: 'Start',
-  endDate: 'End',
-  name: 'Name',
-  link: 'Link',
-  role: 'Role',
-  org: 'Organisation',
-  subtitle: 'Subtitle',
-  issuer: 'Issuer',
-  date: 'Date',
-  language: 'Language',
-  proficiency: 'Proficiency',
-}
+/** Name of a section in the current language (or the given one). */
+export const sectionLabel = (id, lang) => (lang ? translate(lang, `sections.${id}`) : t(`sections.${id}`))
+
+// Field names as shown next to a suggestion, in the current language.
+export const FIELD_LABELS = localizedMap(
+  ['jobTitle', 'text', 'bullets', 'description', 'technologies', 'category', 'items', 'title', 'company', 'school', 'degree', 'field', 'location', 'startDate', 'endDate', 'name', 'link', 'role', 'org', 'subtitle', 'issuer', 'date', 'language', 'proficiency'],
+  'ai.fields',
+)
 
 /** Sections that make sense as a scope on their own (there is something in them to rewrite). */
 export const SCOPABLE_SECTIONS = Object.keys(AI_SECTIONS).filter(id => id !== 'personal' && AI_SECTIONS[id].editable.length > 0)

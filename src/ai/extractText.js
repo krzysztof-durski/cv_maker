@@ -2,13 +2,17 @@
 // the browser. The PDF and Word readers are large, so they are only loaded when needed.
 
 import { MAX_REFERENCE_CHARS } from './prompts.js'
+import { t } from '../i18n/core.js'
 
 export const ACCEPT = '.txt,.md,.markdown,.html,.htm,.pdf,.docx'
 
 const MAX_FILE_BYTES = 10 * 1024 * 1024
 const MAX_PDF_PAGES = 30
 
-const extensionOf = name => (name.split('.').pop() || '').toLowerCase()
+// A file type we do not handle: its message is already safe to show, unlike a failure inside a reader.
+class UnreadableError extends Error {}
+
+const extensionOf = name => (name.includes('.') ? name.split('.').pop().toLowerCase() : '')
 
 function htmlToText(html) {
   const doc = new DOMParser().parseFromString(html, 'text/html')
@@ -57,7 +61,7 @@ const tidy = text =>
  */
 export async function extractText(file) {
   const kind = extensionOf(file.name)
-  if (file.size > MAX_FILE_BYTES) throw new Error(`${file.name} is larger than 10 MB.`)
+  if (file.size > MAX_FILE_BYTES) throw new Error(t('ai.extract.tooLarge', { name: file.name }))
 
   let raw
   try {
@@ -66,17 +70,17 @@ export async function extractText(file) {
     else if (kind === 'pdf') raw = await pdfToText(await file.arrayBuffer())
     else if (kind === 'docx') raw = await docxToText(await file.arrayBuffer())
     else {
-      throw new Error(`Can't read .${kind || 'unknown'} files. Attach a PDF, Word (.docx), text or HTML file, or paste the text instead.`)
+      throw new UnreadableError(t('ai.extract.cantRead', { kind: kind || t('ai.extract.unknownKind') }))
     }
   } catch (err) {
-    if (err?.message?.startsWith("Can't read")) throw err
+    if (err instanceof UnreadableError) throw err
     console.error(err)
-    throw new Error(`Couldn't read ${file.name}. Try another file, or paste the text instead.`)
+    throw new Error(t('ai.extract.couldntRead', { name: file.name }))
   }
 
   const text = tidy(raw)
   if (!text) {
-    throw new Error(`No readable text found in ${file.name}. If it is a scanned image, paste the text instead.`)
+    throw new Error(t('ai.extract.noText', { name: file.name }))
   }
   const truncated = text.length > MAX_REFERENCE_CHARS
   return { name: file.name, text: truncated ? text.slice(0, MAX_REFERENCE_CHARS) : text, truncated }

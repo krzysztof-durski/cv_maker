@@ -2,6 +2,8 @@ import { useRef, useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useAi } from './ai/aiContext'
 import { SparkleIcon } from './ai/icons'
+import { useI18n } from '../i18n/I18nProvider'
+import LanguageSwitch from './LanguageSwitch'
 
 /* ---------- icons ---------- */
 const Icon = ({ path, className = 'h-4 w-4' }) => (
@@ -24,6 +26,7 @@ const FileTextIcon = (p) => <Icon {...p} path={<><path d="M14 2H6a2 2 0 0 0-2 2v
 
 /* ---------- overflow menu ---------- */
 function OverflowMenu({ onDownload, onUpload, onReset, onExportDocx, exportingDocx, onAiSettings, hasMaster, masterSavedAt, onSaveMaster, onLoadMaster, canUndo, canRedo, onUndo, onRedo }) {
+  const { t, lang } = useI18n()
   const [open, setOpen] = useState(false)
   const wrapRef = useRef(null)
   const fileInputRef = useRef(null)
@@ -47,7 +50,8 @@ function OverflowMenu({ onDownload, onUpload, onReset, onExportDocx, exportingDo
         className="grid h-9 w-9 place-items-center rounded-lg border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
         aria-haspopup="menu"
         aria-expanded={open}
-        title="More options"
+        title={t('header.more')}
+        aria-label={t('header.more')}
       >
         <MenuIcon />
       </button>
@@ -58,34 +62,38 @@ function OverflowMenu({ onDownload, onUpload, onReset, onExportDocx, exportingDo
           className="absolute right-0 mt-2 w-56 origin-top-right overflow-hidden rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 shadow-lg animate-menu-in z-50"
         >
           {/* On phones the header has no room for the arrows, so undo and redo live here. */}
+          <div className="flex items-center justify-between px-3 py-2 sm:hidden">
+            <span className="text-xs text-gray-500 dark:text-gray-400">{t('lang.label')}</span>
+            <LanguageSwitch />
+          </div>
           <div className="sm:hidden">
             <button role="menuitem" className={`${item} disabled:cursor-default disabled:opacity-40`} disabled={!canUndo} onClick={close(onUndo)}>
-              <UndoIcon className="h-4 w-4 text-gray-400" /> Undo
+              <UndoIcon className="h-4 w-4 text-gray-400" /> {t('header.undo')}
             </button>
             <button role="menuitem" className={`${item} disabled:cursor-default disabled:opacity-40`} disabled={!canRedo} onClick={close(onRedo)}>
-              <RedoIcon className="h-4 w-4 text-gray-400" /> Redo
+              <RedoIcon className="h-4 w-4 text-gray-400" /> {t('header.redo')}
             </button>
             <div className="my-1 border-t border-gray-100 dark:border-gray-800" />
           </div>
           <button role="menuitem" className={item} onClick={close(onDownload)}>
-            <SaveIcon className="h-4 w-4 text-gray-400" /> Save backup
+            <SaveIcon className="h-4 w-4 text-gray-400" /> {t('menu.saveBackup')}
           </button>
           <button role="menuitem" className={item} onClick={close(() => fileInputRef.current?.click())}>
-            <UploadIcon className="h-4 w-4 text-gray-400" /> Restore backup
+            <UploadIcon className="h-4 w-4 text-gray-400" /> {t('menu.restoreBackup')}
           </button>
           <button role="menuitem" className={`${item} disabled:cursor-wait disabled:opacity-60`} disabled={exportingDocx} onClick={close(onExportDocx)}>
-            <FileTextIcon className="h-4 w-4 text-gray-400" /> {exportingDocx ? 'Exporting…' : 'Export as Word (.docx)'}
+            <FileTextIcon className="h-4 w-4 text-gray-400" /> {exportingDocx ? t('menu.exporting') : t('menu.exportDocx')}
           </button>
           {onAiSettings && (
             <button role="menuitem" className={item} onClick={close(onAiSettings)}>
-              <SparkleIcon className="h-4 w-4 text-gray-400" /> AI settings &amp; API key
+              <SparkleIcon className="h-4 w-4 text-gray-400" /> {t('menu.aiSettings')}
             </button>
           )}
 
           <div className="my-1 border-t border-gray-100 dark:border-gray-800" />
 
-          <button role="menuitem" className={item} onClick={close(onSaveMaster)} title="Keep a copy of this CV to start every tailored version from">
-            <StarIcon className="h-4 w-4 text-gray-400" /> Save as default CV
+          <button role="menuitem" className={item} onClick={close(onSaveMaster)} title={t('menu.saveDefaultTitle')}>
+            <StarIcon className="h-4 w-4 text-gray-400" /> {t('menu.saveDefault')}
           </button>
           <button
             role="menuitem"
@@ -95,19 +103,19 @@ function OverflowMenu({ onDownload, onUpload, onReset, onExportDocx, exportingDo
           >
             <UploadIcon className="h-4 w-4 text-gray-400" />
             <span className="flex flex-col items-start leading-tight">
-              Load default CV
+              {t('menu.loadDefault')}
               <span className="text-[11px] text-gray-400">
-                {hasMaster ? `Saved ${new Date(masterSavedAt).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' })}` : 'None saved yet'}
+                {hasMaster ? t('menu.savedOn', { date: new Date(masterSavedAt).toLocaleDateString(lang, { day: 'numeric', month: 'short', year: 'numeric' }) }) : t('menu.noneSaved')}
               </span>
             </span>
           </button>
 
           <div className="my-1 border-t border-gray-100 dark:border-gray-800" />
 
-          <Link role="menuitem" to="/help" className={item} onClick={() => setOpen(false)}>Help &amp; guide</Link>
-          <Link role="menuitem" to="/about" className={item} onClick={() => setOpen(false)}>About</Link>
-          <Link role="menuitem" to="/terms" className={item} onClick={() => setOpen(false)}>Terms</Link>
-          <Link role="menuitem" to="/privacy" className={item} onClick={() => setOpen(false)}>Privacy</Link>
+          <Link role="menuitem" to="/help" className={item} onClick={() => setOpen(false)}>{t('nav.help')}</Link>
+          <Link role="menuitem" to="/about" className={item} onClick={() => setOpen(false)}>{t('nav.about')}</Link>
+          <Link role="menuitem" to="/terms" className={item} onClick={() => setOpen(false)}>{t('nav.terms')}</Link>
+          <Link role="menuitem" to="/privacy" className={item} onClick={() => setOpen(false)}>{t('nav.privacy')}</Link>
 
           <div className="my-1 border-t border-gray-100 dark:border-gray-800" />
 
@@ -116,7 +124,7 @@ function OverflowMenu({ onDownload, onUpload, onReset, onExportDocx, exportingDo
             className="flex w-full items-center gap-2.5 px-3 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors"
             onClick={close(onReset)}
           >
-            <TrashIcon className="h-4 w-4" /> Reset all data
+            <TrashIcon className="h-4 w-4" /> {t('menu.resetAll')}
           </button>
         </div>
       )}
@@ -135,6 +143,7 @@ function OverflowMenu({ onDownload, onUpload, onReset, onExportDocx, exportingDo
 /* ---------- header ---------- */
 export default function Header({ onReset, onPrint, onDownload, onUpload, onExportDocx, exportingDocx, hasMaster, masterSavedAt, onSaveMaster, onLoadMaster, canUndo, canRedo, onUndo, onRedo, isDark, onToggleDark, mobileView, onMobileViewChange }) {
   const ai = useAi()
+  const { t } = useI18n()
   const seg = (active) =>
     `px-3 py-1 text-xs font-semibold rounded-md transition-colors ${
       active
@@ -150,14 +159,14 @@ export default function Header({ onReset, onPrint, onDownload, onUpload, onExpor
           CV
         </span>
         <span className="hidden text-sm font-semibold text-gray-900 dark:text-gray-100 sm:block">CV Maker</span>
-        <span className="hidden text-xs text-gray-400 dark:text-gray-500 md:block">Harvard style</span>
+        <span className="hidden text-xs text-gray-400 dark:text-gray-500 md:block">{t('header.tagline')}</span>
       </Link>
 
       {/* Mobile: Edit / Preview toggle */}
       <div className="flex flex-1 justify-center lg:hidden">
         <div className="inline-flex rounded-lg border border-gray-200 bg-gray-100 p-0.5 dark:border-gray-700 dark:bg-gray-800">
-          <button onClick={() => onMobileViewChange('edit')} className={seg(mobileView === 'edit')}>Edit</button>
-          <button onClick={() => onMobileViewChange('preview')} className={seg(mobileView === 'preview')}>Preview</button>
+          <button onClick={() => onMobileViewChange('edit')} className={seg(mobileView === 'edit')}>{t('header.edit')}</button>
+          <button onClick={() => onMobileViewChange('preview')} className={seg(mobileView === 'preview')}>{t('header.preview')}</button>
         </div>
       </div>
 
@@ -168,8 +177,8 @@ export default function Header({ onReset, onPrint, onDownload, onUpload, onExpor
       <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
         <div className="hidden items-center sm:flex">
           {[
-            { label: 'Undo', hint: 'Ctrl/Cmd+Z', icon: <UndoIcon />, enabled: canUndo, run: onUndo },
-            { label: 'Redo', hint: 'Ctrl/Cmd+Shift+Z', icon: <RedoIcon />, enabled: canRedo, run: onRedo },
+            { label: t('header.undo'), hint: t('header.undoHint'), icon: <UndoIcon />, enabled: canUndo, run: onUndo },
+            { label: t('header.redo'), hint: t('header.redoHint'), icon: <RedoIcon />, enabled: canRedo, run: onRedo },
           ].map(b => (
             <button
               key={b.label}
@@ -188,26 +197,29 @@ export default function Header({ onReset, onPrint, onDownload, onUpload, onExpor
           <button
             onClick={() => ai.openAssistant('cv')}
             className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-indigo-200 bg-indigo-50 px-2.5 text-xs font-semibold text-indigo-700 transition-colors hover:bg-indigo-100 dark:border-indigo-900 dark:bg-indigo-950/40 dark:text-indigo-300 dark:hover:bg-indigo-950 sm:px-3.5"
-            title="Tailor or edit your CV with AI"
+            title={t('header.aiTitle')}
           >
             <SparkleIcon className="h-4 w-4" />
-            <span className="hidden sm:inline">AI</span>
+            <span className="hidden sm:inline">{t('header.ai')}</span>
           </button>
         )}
 
         <button
           onClick={onPrint}
           className="inline-flex h-9 items-center gap-1.5 rounded-lg bg-indigo-600 px-2.5 text-xs font-semibold text-white transition-colors hover:bg-indigo-700 sm:px-3.5"
-          title="Print or save your CV as a PDF"
+          title={t('header.savePdfTitle')}
         >
           <DownloadIcon className="h-4 w-4" />
-          <span className="hidden sm:inline">Save PDF</span>
+          <span className="hidden sm:inline">{t('header.savePdf')}</span>
         </button>
+
+        <LanguageSwitch className="hidden sm:inline-flex" />
 
         <button
           onClick={onToggleDark}
           className="grid h-9 w-9 place-items-center rounded-lg border border-gray-200 text-gray-600 transition-colors hover:bg-gray-100 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800"
-          title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+          title={isDark ? t('header.toLight') : t('header.toDark')}
+          aria-label={isDark ? t('header.toLight') : t('header.toDark')}
         >
           {isDark ? <SunIcon /> : <MoonIcon />}
         </button>

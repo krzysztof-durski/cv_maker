@@ -1,14 +1,15 @@
 import { useState } from 'react'
-import { Field, DateFields, BulletList, EntryCard, newId, moveItem, inputClass, labelClass } from './shared'
-import { SECTION_HELP } from '../../../utils/sectionHelp'
+import { Field, DateFields, BulletList, EntryCard, HelpPanel, newId, moveItem, inputClass, labelClass } from './shared'
+import { sectionHelp } from '../../../utils/sectionHelp'
+import { useI18n } from '../../../i18n/I18nProvider'
 import AiButton from '../../ai/AiButton'
 
 export default function CustomSectionEditor({ custom, onChange, onReset }) {
+  const { t } = useI18n()
   const [showHelp, setShowHelp] = useState(false)
-  const help = SECTION_HELP.custom
 
   const handleReset = () => {
-    if (window.confirm('Reset the "Custom Section"? All entries will be cleared.')) {
+    if (window.confirm(t('fields.custom.resetConfirm'))) {
       onReset()
     }
   }
@@ -49,10 +50,10 @@ export default function CustomSectionEditor({ custom, onChange, onReset }) {
     <div className="mb-4 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800">
       <div className="flex items-center justify-between border-b border-gray-200 bg-gray-50 px-3 py-2.5 dark:border-gray-700 dark:bg-gray-750">
         <div className="flex items-center gap-2">
-          <p className="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Custom Section</p>
+          <p className="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">{t('sections.custom')}</p>
           <button
             onClick={() => setShowHelp(v => !v)}
-            title="Show tips for this section"
+            title={t('shell.showTips')}
             className={`flex h-4 w-4 items-center justify-center rounded-full text-[10px] font-bold transition-colors
               ${showHelp
                 ? 'bg-blue-500 text-white'
@@ -60,39 +61,27 @@ export default function CustomSectionEditor({ custom, onChange, onReset }) {
           >
             ?
           </button>
-          <AiButton section="custom" label="Custom Section" />
+          <AiButton section="custom" label={t('sections.custom')} />
         </div>
         {onReset && (
           <button
             onClick={handleReset}
             className="ml-2 text-xs text-gray-400 transition-colors hover:text-red-500 dark:text-gray-500"
-            title="Reset Custom Section"
+            title={t('fields.custom.resetTitle')}
           >
-            ↺ Reset
+            {t('shell.reset')}
           </button>
         )}
       </div>
-      {showHelp && (
-        <div className="mx-3 mt-3 rounded-lg border border-blue-100 bg-blue-50 p-3 dark:border-blue-900 dark:bg-blue-950">
-          <p className="mb-1.5 text-xs font-medium text-blue-800 dark:text-blue-200">{help.intro}</p>
-          <ul className="space-y-1">
-            {help.tips.map((tip, i) => (
-              <li key={i} className="flex items-start gap-1.5 text-xs text-blue-700 dark:text-blue-300">
-                <span className="mt-0.5 shrink-0">·</span>
-                <span>{tip}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
+      {showHelp && <HelpPanel help={sectionHelp('custom')} />}
       <div className="p-3">
         <div className="mb-3">
-          <label className={labelClass}>Section Title</label>
+          <label className={labelClass}>{t('fields.custom.sectionTitle')}</label>
           <input
             type="text"
             value={custom.title}
             onChange={e => updateTitle(e.target.value)}
-            placeholder="e.g. Publications, Research, Awards..."
+            placeholder={t('fields.custom.sectionTitlePlaceholder')}
             className={`${inputClass} font-semibold`}
           />
         </div>
@@ -100,8 +89,8 @@ export default function CustomSectionEditor({ custom, onChange, onReset }) {
           <EntryCard key={e.id} aiSection="custom" aiEntryId={e.id} onRemove={() => removeEntry(e.id)} canRemove={custom.entries.length > 1}
             onMoveUp={() => move(e.id, -1)} onMoveDown={() => move(e.id, 1)}
             isFirst={i === 0} isLast={i === custom.entries.length - 1}>
-            <Field label="Title" value={e.title} onChange={v => update(e.id, 'title', v)} placeholder="Entry title" className="col-span-2" />
-            <Field label="Subtitle (optional)" value={e.subtitle} onChange={v => update(e.id, 'subtitle', v)} placeholder="Italic subtitle" className="col-span-2" />
+            <Field label={t('fields.custom.title')} value={e.title} onChange={v => update(e.id, 'title', v)} placeholder={t('fields.custom.titlePlaceholder')} className="col-span-2" />
+            <Field label={t('fields.custom.subtitle')} value={e.subtitle} onChange={v => update(e.id, 'subtitle', v)} placeholder={t('fields.custom.subtitlePlaceholder')} className="col-span-2" />
             <DateFields
               startDate={e.startDate} endDate={e.endDate}
               onStartChange={v => update(e.id, 'startDate', v)}
@@ -119,7 +108,7 @@ export default function CustomSectionEditor({ custom, onChange, onReset }) {
           onClick={addEntry}
           className="w-full rounded-lg border border-dashed border-gray-300 px-3 py-2 text-xs font-medium text-gray-500 transition-colors hover:border-indigo-400 hover:text-indigo-600 dark:border-gray-600 dark:text-gray-400 dark:hover:border-indigo-500 dark:hover:text-indigo-400"
         >
-          + Add entry
+          {t('fields.custom.add')}
         </button>
       </div>
     </div>

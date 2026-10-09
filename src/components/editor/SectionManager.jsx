@@ -15,8 +15,10 @@ import {
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { SECTION_LABELS } from '../../utils/defaultData'
+import { useI18n } from '../../i18n/I18nProvider'
 
 function SortableRow({ section, onToggle }) {
+  const { t } = useI18n()
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
     useSortable({ id: section.id })
 
@@ -37,7 +39,7 @@ function SortableRow({ section, onToggle }) {
         {...attributes}
         {...listeners}
         className="cursor-grab select-none text-lg leading-none text-gray-300 group-hover:text-gray-500 dark:text-gray-600 dark:group-hover:text-gray-400"
-        title="Drag to reorder"
+        title={t('sectionManager.drag')}
       >
         ⠿
       </span>
@@ -47,6 +49,7 @@ function SortableRow({ section, onToggle }) {
       <input
         type="checkbox"
         checked={section.enabled}
+        aria-label={SECTION_LABELS[section.id]}
         onChange={() => onToggle(section.id)}
         className="h-4 w-4 cursor-pointer accent-indigo-600"
       />
@@ -55,6 +58,7 @@ function SortableRow({ section, onToggle }) {
 }
 
 export default function SectionManager({ sectionOrder, onChange }) {
+  const { t } = useI18n()
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
@@ -75,8 +79,8 @@ export default function SectionManager({ sectionOrder, onChange }) {
   return (
     <div className="mb-4 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800">
       <div className="border-b border-gray-200 bg-gray-50 px-3 py-2.5 dark:border-gray-700 dark:bg-gray-750">
-        <p className="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Sections</p>
-        <p className="mt-0.5 text-xs text-gray-400 dark:text-gray-500">Toggle on/off · Drag to reorder</p>
+        <p className="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">{t('sectionManager.title')}</p>
+        <p className="mt-0.5 text-xs text-gray-400 dark:text-gray-500">{t('sectionManager.hint')}</p>
       </div>
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
         <SortableContext items={sectionOrder.map(s => s.id)} strategy={verticalListSortingStrategy}>

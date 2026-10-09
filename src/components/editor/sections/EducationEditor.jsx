@@ -1,7 +1,8 @@
 import { Field, DateFields, BulletList, EntryCard, SectionShell, newId, moveItem } from './shared'
-import { SECTION_HELP } from '../../../utils/sectionHelp'
+import { useI18n } from '../../../i18n/I18nProvider'
 
 export default function EducationEditor({ entries, onChange, onReset }) {
+  const { t } = useI18n()
   const add = () => onChange([...entries, { id: newId(), school: '', degree: '', field: '', location: '', startDate: '', endDate: '', bullets: [] }])
   const remove = (id) => onChange(entries.filter(e => e.id !== id))
   const update = (id, field, value) => onChange(entries.map(e => e.id === id ? { ...e, [field]: value } : e))
@@ -11,15 +12,15 @@ export default function EducationEditor({ entries, onChange, onReset }) {
   const move = (id, dir) => onChange(moveItem(entries, entries.findIndex(e => e.id === id), dir))
 
   return (
-    <SectionShell title="Education" aiSection="education" onAdd={add} addLabel="+ Add education" onReset={onReset} help={SECTION_HELP.education}>
+    <SectionShell title={t('sections.education')} aiSection="education" onAdd={add} addLabel={t('fields.education.add')} onReset={onReset} helpId="education">
       {entries.map((e, i) => (
         <EntryCard key={e.id} aiSection="education" aiEntryId={e.id} onRemove={() => remove(e.id)} canRemove={entries.length > 1}
           onMoveUp={() => move(e.id, -1)} onMoveDown={() => move(e.id, 1)}
           isFirst={i === 0} isLast={i === entries.length - 1}>
-          <Field label="School / University" value={e.school} onChange={v => update(e.id, 'school', v)} placeholder="University of Example" className="col-span-2" />
-          <Field label="Degree" value={e.degree} onChange={v => update(e.id, 'degree', v)} placeholder="Bachelor's" />
-          <Field label="Field of Study" value={e.field} onChange={v => update(e.id, 'field', v)} placeholder="Software Engineering" />
-          <Field label="Location" value={e.location} onChange={v => update(e.id, 'location', v)} placeholder="City, Country" className="col-span-2" />
+          <Field label={t('fields.education.school')} value={e.school} onChange={v => update(e.id, 'school', v)} placeholder={t('fields.education.schoolPlaceholder')} className="col-span-2" />
+          <Field label={t('fields.education.degree')} value={e.degree} onChange={v => update(e.id, 'degree', v)} placeholder={t('fields.education.degreePlaceholder')} />
+          <Field label={t('fields.education.field')} value={e.field} onChange={v => update(e.id, 'field', v)} placeholder={t('fields.education.fieldPlaceholder')} />
+          <Field label={t('fields.location')} value={e.location} onChange={v => update(e.id, 'location', v)} placeholder={t('fields.locationPlaceholder')} className="col-span-2" />
           <DateFields
             startDate={e.startDate} endDate={e.endDate}
             onStartChange={v => update(e.id, 'startDate', v)}

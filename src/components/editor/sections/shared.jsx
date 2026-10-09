@@ -1,5 +1,9 @@
 import { useState } from 'react'
 import AiButton from '../../ai/AiButton'
+import AutoTextarea from '../AutoTextarea'
+import { inputClass, labelClass } from '../styles'
+import { useI18n } from '../../../i18n/I18nProvider'
+import { sectionHelp } from '../../../utils/sectionHelp'
 
 export function moveItem(arr, index, direction) {
   const next = index + direction
@@ -10,12 +14,10 @@ export function moveItem(arr, index, direction) {
 }
 
 /* Shared input styling — imported by the other section editors too */
-export const inputClass =
-  'w-full rounded-lg border border-gray-200 bg-white px-2.5 py-2 text-sm text-gray-900 placeholder-gray-400 transition-colors focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-indigo-400'
+export { inputClass, labelClass }
 
-export const labelClass = 'block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1'
-
-function HelpPanel({ help }) {
+/** The tips of a section, behind the "?" button. */
+export function HelpPanel({ help }) {
   return (
     <div className="mx-3 mb-3 rounded-lg border border-blue-100 bg-blue-50 p-3 dark:border-blue-900 dark:bg-blue-950">
       <p className="mb-1.5 text-xs font-medium text-blue-800 dark:text-blue-200">{help.intro}</p>
@@ -35,35 +37,41 @@ export function Field({ label, value, onChange, placeholder, type = 'text', clas
   return (
     <div className={className}>
       <label className={labelClass}>{label}</label>
-      <input
-        type={type}
-        value={value}
-        onChange={e => onChange(e.target.value)}
-        placeholder={placeholder}
-        className={inputClass}
-      />
+      {type === 'text' ? (
+        <AutoTextarea singleLine value={value} onChange={onChange} placeholder={placeholder} aria-label={label} />
+      ) : (
+        <input
+          type={type}
+          value={value}
+          onChange={e => onChange(e.target.value)}
+          placeholder={placeholder}
+          aria-label={label}
+          className={inputClass}
+        />
+      )}
     </div>
   )
 }
 
 export function DateFields({ startDate, endDate, onStartChange, onEndChange }) {
+  const { t } = useI18n()
   const isPresent = endDate === 'Present'
   return (
     <div className="col-span-2 grid grid-cols-2 items-start gap-2">
       <Field
-        label="Start Date"
+        label={t('dates.start')}
         value={startDate}
         onChange={onStartChange}
-        placeholder="Sep 2022"
+        placeholder={t('dates.startPlaceholder')}
       />
       <div>
-        <label className={labelClass}>End Date</label>
+        <label className={labelClass}>{t('dates.end')}</label>
         <input
           type="text"
           value={isPresent ? '' : endDate}
           onChange={e => onEndChange(e.target.value)}
           disabled={isPresent}
-          placeholder="Jun 2026"
+          placeholder={t('dates.endPlaceholder')}
           className={`${inputClass} disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400 dark:disabled:bg-gray-600 dark:disabled:text-gray-500`}
         />
         <label className="mt-1.5 flex cursor-pointer items-center gap-1.5">
@@ -73,7 +81,7 @@ export function DateFields({ startDate, endDate, onStartChange, onEndChange }) {
             onChange={e => onEndChange(e.target.checked ? 'Present' : '')}
             className="h-3.5 w-3.5 cursor-pointer accent-indigo-600"
           />
-          <span className="text-xs text-gray-500 dark:text-gray-400">Currently ongoing</span>
+          <span className="text-xs text-gray-500 dark:text-gray-400">{t('dates.ongoing')}</span>
         </label>
       </div>
     </div>
@@ -81,23 +89,24 @@ export function DateFields({ startDate, endDate, onStartChange, onEndChange }) {
 }
 
 export function BulletList({ bullets, onAdd, onUpdate, onRemove }) {
+  const { t } = useI18n()
   return (
     <div className="col-span-2">
-      <label className={labelClass}>Bullet Points</label>
+      <label className={labelClass}>{t('bullets.label')}</label>
       {bullets.map((b, i) => (
         <div key={i} className="mb-1.5 flex items-start gap-1.5">
           <span className="mt-2 shrink-0 text-sm text-gray-400 dark:text-gray-500">•</span>
-          <textarea
+          <AutoTextarea
             value={b}
-            onChange={e => onUpdate(i, e.target.value)}
-            placeholder="Describe your achievement or responsibility..."
+            onChange={v => onUpdate(i, v)}
+            placeholder={t('bullets.placeholder')}
             rows={2}
-            className={`${inputClass} resize-none`}
+            aria-label={t('bullets.ariaLabel', { n: i + 1 })}
           />
           <button
             onClick={() => onRemove(i)}
             className="mt-1 shrink-0 text-lg leading-none text-gray-300 transition-colors hover:text-red-500 dark:text-gray-600"
-            title="Remove bullet"
+            title={t('bullets.remove')}
           >
             ×
           </button>
@@ -107,13 +116,14 @@ export function BulletList({ bullets, onAdd, onUpdate, onRemove }) {
         onClick={onAdd}
         className="mt-1 text-xs font-medium text-indigo-600 transition-colors hover:text-indigo-700 dark:text-indigo-400"
       >
-        + Add bullet
+        {t('bullets.add')}
       </button>
     </div>
   )
 }
 
 export function EntryCard({ children, onRemove, canRemove, onMoveUp, onMoveDown, isFirst, isLast, aiSection, aiEntryId }) {
+  const { t } = useI18n()
   return (
     <div className="relative mb-3 rounded-lg border border-gray-200 bg-gray-50 p-3 dark:border-gray-700 dark:bg-gray-900">
       <div className="absolute right-2 top-2 flex items-center gap-1">
@@ -122,7 +132,8 @@ export function EntryCard({ children, onRemove, canRemove, onMoveUp, onMoveDown,
           onClick={onMoveUp}
           disabled={isFirst}
           className="px-0.5 text-xs leading-none text-gray-300 transition-colors hover:text-gray-500 disabled:cursor-default disabled:opacity-20 dark:text-gray-600 dark:hover:text-gray-400"
-          title="Move up"
+          title={t('entry.moveUp')}
+          aria-label={t('entry.moveUp')}
         >
           ▲
         </button>
@@ -130,7 +141,8 @@ export function EntryCard({ children, onRemove, canRemove, onMoveUp, onMoveDown,
           onClick={onMoveDown}
           disabled={isLast}
           className="px-0.5 text-xs leading-none text-gray-300 transition-colors hover:text-gray-500 disabled:cursor-default disabled:opacity-20 dark:text-gray-600 dark:hover:text-gray-400"
-          title="Move down"
+          title={t('entry.moveDown')}
+          aria-label={t('entry.moveDown')}
         >
           ▼
         </button>
@@ -138,7 +150,8 @@ export function EntryCard({ children, onRemove, canRemove, onMoveUp, onMoveDown,
           <button
             onClick={onRemove}
             className="ml-0.5 text-xl leading-none text-gray-300 transition-colors hover:text-red-500 dark:text-gray-600"
-            title="Remove entry"
+            title={t('entry.remove')}
+            aria-label={t('entry.remove')}
           >
             ×
           </button>
@@ -151,11 +164,12 @@ export function EntryCard({ children, onRemove, canRemove, onMoveUp, onMoveDown,
   )
 }
 
-export function SectionShell({ title, children, onAdd, addLabel = '+ Add entry', onReset, help, aiSection }) {
+export function SectionShell({ title, children, onAdd, addLabel, onReset, helpId, aiSection }) {
+  const { t } = useI18n()
   const [showHelp, setShowHelp] = useState(false)
 
   const handleReset = () => {
-    if (window.confirm(`Reset the "${title}" section? All entries will be cleared.`)) {
+    if (window.confirm(t('shell.resetConfirm', { title }))) {
       onReset()
     }
   }
@@ -165,10 +179,10 @@ export function SectionShell({ title, children, onAdd, addLabel = '+ Add entry',
       <div className="flex items-center justify-between border-b border-gray-200 bg-gray-50 px-3 py-2.5 dark:border-gray-700 dark:bg-gray-750">
         <div className="flex items-center gap-2">
           <p className="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">{title}</p>
-          {help && (
+          {helpId && (
             <button
               onClick={() => setShowHelp(v => !v)}
-              title="Show tips for this section"
+              title={t('shell.showTips')}
               className={`flex h-4 w-4 items-center justify-center rounded-full text-[10px] font-bold transition-colors
                 ${showHelp
                   ? 'bg-blue-500 text-white'
@@ -183,20 +197,20 @@ export function SectionShell({ title, children, onAdd, addLabel = '+ Add entry',
           <button
             onClick={handleReset}
             className="ml-2 text-xs text-gray-400 transition-colors hover:text-red-500 dark:text-gray-500"
-            title={`Reset ${title}`}
+            title={t('shell.resetTitle', { title })}
           >
-            ↺ Reset
+            {t('shell.reset')}
           </button>
         )}
       </div>
-      {showHelp && help && <HelpPanel help={help} />}
+      {showHelp && helpId && <HelpPanel help={sectionHelp(helpId)} />}
       <div className="p-3">
         {children}
         <button
           onClick={onAdd}
           className="w-full rounded-lg border border-dashed border-gray-300 px-3 py-2 text-xs font-medium text-gray-500 transition-colors hover:border-indigo-400 hover:text-indigo-600 dark:border-gray-600 dark:text-gray-400 dark:hover:border-indigo-500 dark:hover:text-indigo-400"
         >
-          {addLabel}
+          {addLabel || t('shell.addEntry')}
         </button>
       </div>
     </div>

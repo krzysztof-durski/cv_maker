@@ -1,6 +1,7 @@
 import AiCard from '../ai/AiCard'
 import HowToUse from './HowToUse'
 import SectionManager from './SectionManager'
+import TemplatePicker from './TemplatePicker'
 import PersonalInfoEditor from './sections/PersonalInfoEditor'
 import ProfileEditor from './sections/ProfileEditor'
 import EducationEditor from './sections/EducationEditor'
@@ -12,9 +13,12 @@ import CertificationsEditor from './sections/CertificationsEditor'
 import VolunteerEditor from './sections/VolunteerEditor'
 import CustomSectionEditor from './sections/CustomSectionEditor'
 import { DEFAULT_DATA } from '../../utils/defaultData'
+import { useI18n } from '../../i18n/I18nProvider'
 
 export default function EditorPanel({ cvData, setCvData }) {
+  const { t } = useI18n()
   const update = (field) => (value) => setCvData(prev => ({ ...prev, [field]: value }))
+  const updatePhoto = (photo) => setCvData(prev => ({ ...prev, personal: { ...prev.personal, photo } }))
   const reset = (field) => () => setCvData(prev => ({ ...prev, [field]: DEFAULT_DATA[field] }))
 
   const sectionEditors = {
@@ -33,13 +37,23 @@ export default function EditorPanel({ cvData, setCvData }) {
     <div className="mx-auto w-full max-w-2xl p-4 sm:p-5">
       <div className="mb-4 flex items-baseline justify-between">
         <h1 className="text-sm font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-          Editor
+          {t('editor.title')}
         </h1>
-        <span className="text-xs text-gray-400 dark:text-gray-500">Auto-saved locally</span>
+        <span className="text-xs text-gray-400 dark:text-gray-500">{t('editor.autoSaved')}</span>
       </div>
 
       <AiCard />
       <HowToUse />
+      <TemplatePicker
+        template={cvData.template}
+        cvLanguage={cvData.language}
+        gender={cvData.gender}
+        photo={cvData.personal.photo}
+        onTemplateChange={update('template')}
+        onPhotoChange={updatePhoto}
+        onCvLanguageChange={update('language')}
+        onGenderChange={update('gender')}
+      />
       <PersonalInfoEditor
         personal={cvData.personal}
         onChange={update('personal')}

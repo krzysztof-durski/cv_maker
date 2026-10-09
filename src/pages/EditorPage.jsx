@@ -9,7 +9,11 @@ import { AiProvider } from '../components/ai/AiProvider'
 import { useAiSettings } from '../components/ai/useAiSettings'
 import { useMasterCv } from '../hooks/useMasterCv'
 import { useHistory } from '../hooks/useHistory'
+import { usePanelWidth } from '../hooks/usePanelWidth'
+import ResizeHandle from '../components/ResizeHandle'
 import { pdfFileName } from '../utils/pdfFileName'
+import { useI18n } from '../i18n/I18nProvider'
+import { resolveCvLanguage } from '../i18n/cvLanguage'
 
 export default function EditorPage() {
   const [cvData, setStoredCv] = useLocalStorage('cv_maker_data', DEFAULT_DATA)
@@ -19,11 +23,12 @@ export default function EditorPage() {
   const [isDark, toggleDark] = useDarkMode()
   const [mobileView, setMobileView] = useState('edit') // 'edit' | 'preview' — only used below lg
   const [exportingDocx, setExportingDocx] = useState(false)
+  const { t, lang } = useI18n()
+  const cvLanguage = resolveCvLanguage(cvData.language, lang)
+  const panel = usePanelWidth() // desktop only: below lg the editor is full width
 
   const handleReset = () => {
-    if (window.confirm(
-      'This will permanently delete all your CV data, your saved default CV and any saved AI API key, and cannot be undone. Are you sure?'
-    )) {
+    if (window.confirm(t('app.resetConfirm'))) {
       window.localStorage.removeItem('cv_maker_data')
       aiSettings.clearAll()
       clearMaster()
@@ -44,13 +49,13 @@ export default function EditorPage() {
   }
 
   const handleSaveMaster = () => {
-    if (master && !window.confirm('Replace your saved default CV with the CV you are editing now?')) return
-    if (!saveMaster(cvData)) alert('Could not save the default CV: the browser storage is full or blocked.')
+    if (master && !window.confirm(t('app.replaceDefaultConfirm'))) return
+    if (!saveMaster(cvData)) alert(t('app.saveDefaultFailed'))
   }
 
   const handleLoadMaster = () => {
     if (!master) return
-    if (window.confirm('Replace the CV you are editing with your saved default CV? Your current edits will be lost unless you save a backup first.')) {
+    if (window.confirm(t('app.loadDefaultConfirm'))) {
       setCvData(master.data)
     }
   }
@@ -76,11 +81,11 @@ export default function EditorPage() {
     reader.onload = (e) => {
       try {
         const parsed = JSON.parse(e.target.result)
-        if (window.confirm('This will replace your current CV data with the uploaded file. Continue?')) {
+        if (window.confirm(t('app.uploadConfirm'))) {
           setCvData(mergeWithDefaults(parsed))
         }
       } catch {
-        alert('Invalid file — please upload a CV Maker .json backup file.')
+        alert(t('app.uploadInvalid'))
       }
     }
     reader.readAsText(file)
@@ -91,7 +96,7 @@ export default function EditorPage() {
     setExportingDocx(true)
     try {
       const { cvDataToDocxBlob, docxFileName } = await import('../utils/exportDocx')
-      const blob = await cvDataToDocxBlob(cvData)
+      const blob = await cvDataToDocxBlob(cvData, cvLanguage)
       const url = URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url
@@ -100,7 +105,7 @@ export default function EditorPage() {
       URL.revokeObjectURL(url)
     } catch (err) {
       console.error(err)
-      alert('Could not generate the Word document. Please try again.')
+      alert(t('app.docxFailed'))
     } finally {
       setExportingDocx(false)
     }
@@ -133,10 +138,19 @@ export default function EditorPage() {
         <main id="app-main" className="flex flex-1 overflow-hidden">
           {/* Editor */}
           <div
-            className={`${mobileView === 'edit' ? 'flex' : 'hidden'} thin-scroll no-print w-full shrink-0 flex-col overflow-y-auto border-r border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-900 lg:flex lg:w-[440px] xl:w-[480px]`}
+            style={{ '--editor-width': `${panel.width}px` }}
+            className={`${mobileView === 'edit' ? 'flex' : 'hidden'} thin-scroll no-print w-full shrink-0 flex-col overflow-y-auto border-r border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-900 lg:flex lg:w-[var(--editor-width)]`}
           >
             <EditorPanel cvData={cvData} setCvData={setCvData} />
           </div>
+          <ResizeHandle
+            label={t('editor.resizeHandle')}
+            width={panel.width}
+            min={panel.min}
+            max={panel.max}
+            onChange={panel.setWidth}
+            onReset={panel.resetWidth}
+          />
 
           {/* Live preview */}
           <div

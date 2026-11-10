@@ -112,16 +112,18 @@ export default {
           '**Harvard style.** Clean, professional, widely accepted format used by top universities and employers.',
           '**English and Polish.** Switch the app between the two, and print your CV with English or Polish headings.',
           '**Backup and restore.** Download your CV data as a JSON file and restore it on any device or browser.',
+          '**Open source.** The full code is public under the MIT licence on [GitHub](https://github.com/krzysztof-durski/cv_maker) — read it, fork it, or contribute.',
           '**Open and honest.** No dark patterns, no hidden charges, no upsells.',
         ] }] },
         { title: 'The tech', blocks: [{ p: 'Built with React, Vite, and Tailwind CSS. Hosted on Cloudflare Pages. The PDF export uses your browser\'s native print dialog — no third-party libraries, no server-side rendering, no watermarks.' }] },
+        { title: 'Contribute', blocks: [{ p: 'CV Maker is open source under the MIT licence. Found a bug, want a new template or a translation? Open an issue or a pull request on [GitHub](https://github.com/krzysztof-durski/cv_maker) — everyone is welcome to contribute.' }] },
         { divider: true, blocks: [{ note: 'If this saved you from yet another paywall, I\'m glad. If you want to see more projects like this, visit [codepapa.xyz](https://codepapa.xyz).' }] },
       ],
     },
 
     terms: {
       title: 'Terms of Service',
-      updated: 'October 2026',
+      updated: 'November 2026',
       sections: [
         { title: '1. About This Service', blocks: [{ p: 'CV Maker is a free, browser-based tool that lets you create Harvard-style CVs. There are no accounts, no subscriptions, and no servers of ours involved — everything runs in your browser. An optional AI assistant can call an AI provider of your choice directly from your browser (see section 3).' }] },
         { title: '2. Your Data', blocks: [{ p: 'All CV data you enter is stored exclusively in your browser\'s `localStorage`. We never receive it, store it in any database, or share it with any third party. The only way any of it leaves your browser is if you choose to use the optional AI assistant. Clearing your browser data or storage will permanently delete your CV.' }] },
@@ -145,7 +147,7 @@ export default {
           ] },
           { p: 'You are solely responsible for the accuracy and legality of the content you produce.' },
         ] },
-        { title: '6. Intellectual Property', blocks: [{ p: 'The CV content you create is entirely yours. We claim no ownership over anything you write. The CV Maker application code and design are © {year} Krzysztof Durski, all rights reserved.' }] },
+        { title: '6. Intellectual Property', blocks: [{ p: 'The CV content you create is entirely yours. We claim no ownership over anything you write. CV Maker is open source: its code is released under the [MIT License](https://github.com/krzysztof-durski/cv_maker/blob/main/LICENSE), © {year} Krzysztof Durski, and anyone is free to use, copy, modify and contribute to it on [GitHub](https://github.com/krzysztof-durski/cv_maker). Contributions you submit are made under the same licence.' }] },
         { title: '7. Changes to Terms', blocks: [{ p: 'We may update these terms occasionally. Continued use of the service after changes constitutes acceptance of the updated terms.' }] },
       ],
     },

@@ -112,16 +112,18 @@ export default {
           '**Styl Harvard.** Czysty, profesjonalny, powszechnie akceptowany format używany przez czołowe uczelnie i pracodawców.',
           '**Polski i angielski.** Przełączaj aplikację między językami i drukuj CV z polskimi lub angielskimi nagłówkami.',
           '**Kopia zapasowa i przywracanie.** Pobierz dane CV jako plik JSON i przywróć je na dowolnym urządzeniu lub w dowolnej przeglądarce.',
+          '**Open source.** Cały kod jest publiczny na licencji MIT na [GitHubie](https://github.com/krzysztof-durski/cv_maker) — przeczytaj go, zrób fork albo dołóż swoją cegiełkę.',
           '**Otwarcie i uczciwie.** Bez ciemnych wzorców, ukrytych opłat i wciskania dodatków.',
         ] }] },
         { title: 'Technologia', blocks: [{ p: 'Zbudowany w React, Vite i Tailwind CSS. Hostowany na Cloudflare Pages. Eksport do PDF korzysta z natywnego okna drukowania Twojej przeglądarki — bez zewnętrznych bibliotek, bez renderowania po stronie serwera, bez znaków wodnych.' }] },
+        { title: 'Współtwórz', blocks: [{ p: 'CV Maker jest open source na licencji MIT. Znalazłeś błąd, chcesz nowy szablon albo tłumaczenie? Zgłoś issue lub pull request na [GitHubie](https://github.com/krzysztof-durski/cv_maker) — każdy jest mile widziany.' }] },
         { divider: true, blocks: [{ note: 'Jeśli to uchroniło Cię przed kolejnym paywallem, cieszę się. Jeśli chcesz zobaczyć więcej takich projektów, odwiedź [codepapa.xyz](https://codepapa.xyz).' }] },
       ],
     },
 
     terms: {
       title: 'Regulamin',
-      updated: 'październik 2026',
+      updated: 'listopad 2026',
       sections: [
         { title: '1. O usłudze', blocks: [{ p: 'CV Maker to darmowe narzędzie działające w przeglądarce, które pozwala tworzyć CV w stylu Harvard. Nie ma kont, subskrypcji ani żadnych naszych serwerów — wszystko działa w Twojej przeglądarce. Opcjonalny asystent AI może łączyć się z wybranym przez Ciebie dostawcą AI bezpośrednio z Twojej przeglądarki (zob. punkt 3).' }] },
         { title: '2. Twoje dane', blocks: [{ p: 'Wszystkie wprowadzone dane CV są przechowywane wyłącznie w `localStorage` Twojej przeglądarki. Nigdy ich nie otrzymujemy, nie zapisujemy w żadnej bazie danych ani nie udostępniamy osobom trzecim. Jedyna droga, którą jakiekolwiek z nich opuszczają Twoją przeglądarkę, to skorzystanie z opcjonalnego asystenta AI. Wyczyszczenie danych lub pamięci przeglądarki trwale usunie Twoje CV.' }] },
@@ -145,7 +147,7 @@ export default {
           ] },
           { p: 'Ponosisz wyłączną odpowiedzialność za prawdziwość i legalność tworzonych treści.' },
         ] },
-        { title: '6. Własność intelektualna', blocks: [{ p: 'Treść tworzonego CV należy w całości do Ciebie. Nie rościmy sobie praw do niczego, co napiszesz. Kod aplikacji i projekt CV Maker są © {year} Krzysztof Durski, wszelkie prawa zastrzeżone.' }] },
+        { title: '6. Własność intelektualna', blocks: [{ p: 'Treść tworzonego CV należy w całości do Ciebie. Nie rościmy sobie praw do niczego, co napiszesz. CV Maker jest projektem open source: jego kod jest udostępniony na [licencji MIT](https://github.com/krzysztof-durski/cv_maker/blob/main/LICENSE), © {year} Krzysztof Durski, i każdy może go swobodnie używać, kopiować, modyfikować oraz współtworzyć na [GitHubie](https://github.com/krzysztof-durski/cv_maker). Zgłaszane przez Ciebie zmiany są udostępniane na tej samej licencji.' }] },
         { title: '7. Zmiany regulaminu', blocks: [{ p: 'Możemy od czasu do czasu aktualizować niniejszy regulamin. Dalsze korzystanie z usługi po wprowadzeniu zmian oznacza akceptację zaktualizowanego regulaminu.' }] },
       ],
     },
